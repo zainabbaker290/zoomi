@@ -2,6 +2,10 @@ class Sensors:
     def __init__(self) -> None:
         pass
 
+    def floor_type():
+        #detects floor type
+        pass 
+
     def cliff_detected():
         #if cliff detected turn zoomi
         pass 

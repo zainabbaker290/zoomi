@@ -7,7 +7,6 @@ class Battery:
         #returns battery level
         pass
     
-
     #should this be a setter ? 
     def raise_battery_level():
         #check to see if at dock 
