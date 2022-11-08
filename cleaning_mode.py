@@ -9,13 +9,10 @@ class CleaningMode():
     def floor_detection():
         #floor type, changes mode, gets this from sensor
         pass
-    
-    def green():
-        #power = low 
-        pass
 
-    def turbo():
-        #power = max 
+    def set_power():
+        #green = low
+        #turbo = max
         pass
     
     def set_speed():
