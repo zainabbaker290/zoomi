@@ -1,17 +1,12 @@
 class Battery:
     def __init__(self):
-        #has a battery state 
+        #all zoomis start with 50% battery 
+        self.battery_level = 50
         pass
     
     def get_battery_level(self):
-        #returns battery level
-        pass
+        return self.battery_state
     
-    #should this be a setter ? 
-    def raise_battery_level():
-        #check to see if at dock 
-        #raise battery percentage 
-        #confused here cause does this make sense 
-            #checks if at dock from sensor 
-            #if yes then charging 
-        pass
+    def set_battery_level(self):
+        self.battery_level = self.battery_level + 10
+        return self.battery_level

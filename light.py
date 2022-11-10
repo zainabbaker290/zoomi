@@ -1,12 +1,10 @@
 class Light:
-    def __init__(self) -> None:
-        pass
+    def __init__(self):
+        self.light = None
 
-    def get_light():
-        #get light colour 
-        pass
+    def get_light(self):
+        return self.light 
 
-    def set_light():
-        #set light to suitable colour based on getting the battery status
-        pass 
+    def set_light(self,light):
+        self.light = light 
     

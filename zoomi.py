@@ -1,28 +1,30 @@
 class Zoomi:
-    def __init__(self) -> None:
-        #zoomi has battery, sensors, light , dirt compartment
-        #zoomi has state 
-        #zoomi has cleaning mode 
-        pass
+    def __init__(self, Battery, Sensors, Light, DirtCompartment, CleaningMode, Wheels, BaseDock) -> None:
+        self.battery = Battery
+        self.sensors = Sensors
+        self.light = Light
+        self.dirt_compartment = DirtCompartment
+        self.cleaning_mode = CleaningMode
+        self.wheels = Wheels
+        self.base_dock = BaseDock
+        self.state = "deactivated"
 
-    def zoomi_state():
-        #change state of zoomi 
-        # activated 
-        # sleep 
-        # deactivated 
-
-        pass 
+    def set_zoomi_state(self,state):
+        self.state = state 
     
-    def activate_zoomi():
-        #checks if battery low 
-            #if low = go to base 
-            #tells user zoomi is asleep 
-            #app pings zoomi until zoomi up again 
-        
-        #checks dirt compartment 
-            #If nearly full → 
-            # warns user to empty 
-            # or else zoomi might not properly clean the room → if user presses yes zoomi will hoover but might not be able to pick up anything 
+    def mid_clean_charge(self):
+        self.set_zoomi_state("sleep")
+        self.sensors.navigate_home()
+        self.light.set_light("orange")
+        return self.battery.get_battery_level()
+    
+
+    def activate_zoomi(self):
+        if self.battery.get_battery_level() <= 10:
+            self.mid_clean_charge()
+            self.set_zoomi_state("activated")
+
+        self.dirt_compartment.warn_user()
         
         #checks state its in --> if state sleep, means it needs to finish clean 
         
@@ -32,5 +34,6 @@ class Zoomi:
         #does cleaning mode that is activated 
         #constantly calls on sensors 
         #once finished return to base dock
+        #removes some battery percentage and adds dirt to dirt compartment
     
         pass
