@@ -43,33 +43,42 @@ class Zoomi:
         self.location = self.zoomi_x,self.zoomi_y
         return self.location
     
-    #use sensors here too just giving me headache rn 
     #i dont know how this is going to work, feel its going to do my diagram
-    #check wheels maybe can put them into small zoomi things 
     #okay to fix diagram thing i did a whole x meets the spot thing like in a tresure hunt 
     #so when it reaches end point go home - relaistically not good 
-    #okay need to find out how to add to dirt compartment 
     def zoomi_movement(self):
         while (self.zoomi_x < self.room.end_x) and (self.zoomi_y < self.room.end_y):
             while self.room.end_y >  self.zoomi_y:
                 self.zoomi_forward(1)
                 for value in self.room.barrier.values():
                     if self.zoomi_y == value:
+                        self.sensors.barrier_detected()
+                        self.zoomi_right(1)
+                for value in self.room.cliff.values():
+                    if self.zoomi_y == value:
+                        self.sensors.cliff_detected()
                         self.zoomi_right(1)
 
             if self.room.end_y == self.zoomi_y:
+                self.wheels.turn_wheels()
                 self.zoomi_right(1) 
-                #turn the wheels
+                
             
             while self.room._start_y < self.zoomi_y:
                 self.zoomi_backward(1)
                 for value in self.room.barrier.values():
                     if self.zoomi_y == value:
+                        self.sensors.barrier_detected()
+                        self.zoomi_right(1)
+                for value in self.room.cliff.values():
+                    if self.zoomi_y == value:
+                        self.sensors.cliff_detected()
                         self.zoomi_right(1)
             
             if self.room._start_y == self.zoomi_y:
+                self.wheels.turn_wheels()
                 self.zoomi_right(1) 
-                #turn the wheels 
+                
         
         self.navigate_home()
         
@@ -80,9 +89,6 @@ class Zoomi:
         self.zoomi_left(self.zoomi_x)
         return self.location
 
-    #getting stuck on tying it all together 
-    #feeling hurgeqgnpiuget so pushing and living and then relooking 
-    
     def activate_zoomi(self):
         if self.battery.get_battery_level() <= 10:
             self.mid_clean_charge()
@@ -92,14 +98,15 @@ class Zoomi:
 
         self.dirt_compartment.warn_user()
     
-        #constantly pings battery level to see if its below 10%, if below, goes back to base 
         self.set_zoomi_state("active")
         self.light.set_light("green")
         self.battert.set_battery_level(-10)
         self.dirt_compartment.set_dirt_level(10)
-        #how are we going to code this 
-        #does cleaning mode that is activated 
-        #constantly calls on sensors 
-        #once finished return to base dock
-    
-        pass
+
+        return self.set_zoomi_state("deactivated")
+
+#notes im putting for myself to discuss with team later 
+#it will ping the battery and dirt in main 
+#makes more sense 
+# ill make the code go to sleep or something 
+#cleaning mode will be activated through main 
