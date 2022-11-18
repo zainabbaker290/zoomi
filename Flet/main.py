@@ -15,10 +15,15 @@ def main(page: Page):
     page.window_width= 500
     page.window_height = 780
     output_text = Text()   
+
     def start_cycle(e):
-        close_dlg(e)
+        if profileSelection_dropdown.value=="Custom":
+            userInputs=[mode_dropdown,laps_dropdown,speed_dropdown]
+            if not verify_create_input(userInputs):
+                return 
         page.snack_bar=SnackBar(Text("Your Cleaning Cycle Has Started!"))
         page.snack_bar.open = True
+        close_dlg(e)
         page.update()
     def check_for_custom(e):
         if profileSelection_dropdown.data == "edit":
@@ -532,7 +537,7 @@ def main(page: Page):
                     
                     [AppBar(title=Text("Scheduled Cleans"),center_title=True),d,
                     FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createschedule),
-                    navBar]
+                    navBar],scroll="auto"
                 )
             )
             navBar.selected_index=2

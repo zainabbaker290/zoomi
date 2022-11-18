@@ -17,4 +17,4 @@ withCustomStartMenu =Column(controls=[
     Row(controls=[profileSelection_dropdown]),
     Row(controls=[mode_dropdown,modeQ]),
     Row(controls=[speed_dropdown,speedQ]),
-    Row(controls=[laps_dropdown,lapsQ])],height=280,width=350)
+    Row(controls=[laps_dropdown,lapsQ])],height=330,width=350,alignment="spaceEvenly")
