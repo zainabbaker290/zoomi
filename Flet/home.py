@@ -9,7 +9,7 @@ navBar = NavigationBar(
     NavigationDestination(icon=icons.CALENDAR_MONTH_ROUNDED, label="Schedules")
 ])
 
-appBar =AppBar(title=Text("Zoomi"),center_title=True)
+appBar =AppBar(title=Text("Home"),center_title=True)
 
 noCustomStartMenu = Column(controls=[
     Row(controls=[Text(value="Select a Cleaning Profile")]),

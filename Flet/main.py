@@ -1,5 +1,6 @@
 import flet
 import sqlite3
+from math import pi
 from flet.transform import Scale
 from flet import (AppBar, Dropdown, theme, ElevatedButton, Image,Icon, Page, Row, Text, FilledTonalButton , IconButton, FloatingActionButton, border_radius,
                   TextField, View, colors, dropdown, icons,AlertDialog,Card, filled_tonal_button,margin,padding, Container, TextButton, Column, alignment, SnackBar, NavigationBar, NavigationDestination)
@@ -10,17 +11,22 @@ from schedules import *
 from home import *
 from theme import *
 
+zoomiBatteryPercentage = 100
+zoomiState= "deactivated"
+zoomiBagPercentage = 0
+zoomiFlipped= False
+
 def main(page: Page):
     page.window_resizable=False
     page.window_width= 500
     page.window_height = 780
     output_text = Text()   
-
+    #BatteryIcon = Icon(icon=icons.BATTERY_FULL)
     #runs when start cycle button pressed.
     def start_cycle(e):
         if profileSelection_dropdown.value=="Custom":
             userInputs=[mode_dropdown,laps_dropdown,speed_dropdown]
-            if not verify_create_input(userInputs):
+            if not verify_inputs(userInputs):
                 return 
         page.snack_bar=SnackBar(Text("Your Cleaning Cycle Has Started!"))
         page.snack_bar.open = True
@@ -343,7 +349,7 @@ def main(page: Page):
             userInputs.append(mode_dropdown)
             userInputs.append(speed_dropdown)
             userInputs.append(laps_dropdown)
-        if verify_edit_name(existingSchedules,scheduleIndex,nameInput) and verify_create_input(userInputs) == True:
+        if verify_edit_name(existingSchedules,scheduleIndex,nameInput) and verify_inputs(userInputs) == True:
             scheduleNameInput.error_text = None
             close_dlg(e)
             write_updated_schedule_to_DB(scheduleIndex)
@@ -418,7 +424,8 @@ def main(page: Page):
             ]
         ,
         actions_alignment="spaceAround")
-    def verify_create_input(userInputs):
+    
+    def verify_inputs(userInputs):
         fail = False
         for input in userInputs:
                 if not input.value:
@@ -474,7 +481,7 @@ def main(page: Page):
         existingProfiles = fetch_profiles_from_DB()
         nameInput = profileNameInput
         userInputs = [mode_dropdown,speed_dropdown,laps_dropdown,profileNameInput]
-        if verify_create_input(userInputs) == True and verify_create_name(existingProfiles,nameInput) == True:
+        if verify_inputs(userInputs) == True and verify_create_name(existingProfiles,nameInput) == True:
             createProfileConfirmation.content = Column(
                 controls=[
                 Text(profileNameInput.value),
@@ -498,7 +505,7 @@ def main(page: Page):
             userInputs.append(mode_dropdown)
             userInputs.append(speed_dropdown)
             userInputs.append(laps_dropdown)
-        if verify_create_input(userInputs) == True and verify_create_name(existingSchedules,nameInput) == True:
+        if verify_inputs(userInputs) == True and verify_create_name(existingSchedules,nameInput) == True:
                 createScheduleConfirmation.content = Column(controls=[
                     Text(scheduleNameInput.value),
                     Text(day_dropdown.value),
@@ -511,6 +518,26 @@ def main(page: Page):
                     )
                 open_dlg(createScheduleConfirmation)
                 page.update()
+    
+    def determineBatteryIcon():
+        if zoomiBatteryPercentage == 100:
+            return Icon(name=icons.BATTERY_FULL,color=colors.GREEN,rotate=pi/2)
+        else:
+            return Icon(name=icons.BATTERY_UNKNOWN)
+
+    def determineCapacityIcon():
+        if zoomiBagPercentage <100:
+            return Icon(name=icons.CHECK, color=colors.GREEN)
+        else:
+            return Icon(name=icons.WARNING, color=colors.RED)
+
+    def determineStatusIcon():
+        if zoomiState == "active":
+            return Icon(name=icons.CIRCLE, color=colors.GREEN)
+        if zoomiState == "deactivated":
+            return Icon(name=icons.CIRCLE, color=colors.ORANGE)
+        if zoomiState == "sleep":
+            return Icon(name=icons.PAUSE_CIRCLE)
 
     createprofilesubmit_btn = ElevatedButton(text="Submit", on_click=create_profile_submit)
     createschedulesubmit_btn = ElevatedButton(text="Submit", on_click=create_schedule_submit)
@@ -518,21 +545,66 @@ def main(page: Page):
     
     def route_change(e):
         page.views.clear()
-        appBar.title=(Text("Zoomi"))
+        appBar.title=(Text("Home"))
+        status = "Standby"
+        batteryIcon = determineBatteryIcon()
+        capacityIcon = determineCapacityIcon()
+        statusIcon = determineStatusIcon()
         page.views.append(
             View(
                 "/",
                 [
-                    appBar,Card(content=Image(src=f"placeholder.png",width=400,height=400)),
+                    appBar,
+                    Column(
+                        controls=[
+                            # Row(controls=[
+                            #     Text(value="My Zoomi Robot", style="titleLarge"),
+                            #     statusIcon
+                            #     ]
+                            # ),
+                            Card(content=
+                                    Column(
+                                        controls=[
+                                        Row(controls=[
+                                            Text(value="Welcome Home",style="titleLarge"),
+                                        ]
+                                        ),
+                                        Image(src=f"roomba.png",width=200,height=200),
+                                        Row(controls=[
+                                            Text(value=status,style="titleMedium"),
+                                            statusIcon
+                                        ]
+                                        ),
+                                        Row(
+                                            controls=[
+                                                Row(controls=[
+                                                    Text(value="Battery"),
+                                                    batteryIcon]),
+                                                Row(controls=[
+                                                    Text(value="Capacity"),
+                                                    capacityIcon])
+                                            ]
+                                        ),
+                                        
+                                        
+                                        ]
+                                    )           
+                                )
+                        ],
+                        horizontal_alignment="center"
+                        
+                    ),
                     ElevatedButton("Start Cycle", on_click=open_start_cycle_menu),
                     navBar
                     
-                ]
+                ],
+                horizontal_alignment="center"
                 )
             )
         page.theme_mode="light"
         page.theme=theme.Theme(color_scheme_seed="#006781",use_material3=True)
         navBar.selected_index=1
+
         if page.route == "/schedules" or page.route == "/schedules/createschedule":
             appBar.title=Text(value="Scheduled Cleans")
             s = fetch_schedules_from_DB()
@@ -544,7 +616,8 @@ def main(page: Page):
                     [appBar,
                     d,
                     FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createschedule),
-                    navBar],scroll="auto"
+                    navBar],
+                    scroll="auto"
                 )
             )
             navBar.selected_index=2
@@ -552,16 +625,17 @@ def main(page: Page):
         if page.route == "/profiles" or page.route == "/profiles/createprofile":
             print(read_profiles_from_DB())
             appBar.title=Text(value="Cleaning Profiles")
-            p= parse_profiles(read_profiles_from_DB())
-            d = display_profiles(p)
+            parsedProfile= parse_profiles(read_profiles_from_DB())
+            profilesDisplay = display_profiles(parsedProfile)
             page.views.append(
                 View(
                     "/profiles",
                     
-                    [appBar,d,
+                    [appBar,
+                    profilesDisplay,
                     FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createprofile),
                     navBar],
-                scroll="auto")
+                    scroll="auto")
                 )
             navBar.selected_index=0
 
@@ -572,14 +646,16 @@ def main(page: Page):
             contents = []
             update_profile_selection_dropdown()
             profileSelection_dropdown.data = "create"
+
             for widget in createScheduledCleanContents:
                 contents.append(widget)
+
             contents.append(createschedulesubmit_btn)
             contents.append(output_text)
             page.views.append(
                 View(
                     "/schedules/createschedule", 
-                    contents,scroll="auto"
+                    [contents],scroll="auto"
                     
                 )
             )
@@ -640,6 +716,7 @@ def main(page: Page):
             )
         )
         page.update()
+
     def refresh_profiles():
         p= parse_profiles(read_profiles_from_DB())
         d = display_profiles(p)
@@ -675,6 +752,7 @@ def main(page: Page):
 
     # pw = Text(bottom=50, right=50, style="displaySmall")
     # page.overlay.append(pw)
+
     def view_pop_noe():
         page.views.pop()
         top_view = page.views[-1]
