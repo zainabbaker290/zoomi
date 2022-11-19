@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
 class BaseDock():
-    def __init__(self, Battery, Sensors):
+    def __init__(self, Battery):
         self.base_x = 0
         self.base_y = 0 
         self.battery = Battery
-        self.zoomi_location = Sensors.location
+        self.zoomi_location = Zoomi.location
     
     def call_zoomi_home(self):
         #zoomi base starts at (0,0)

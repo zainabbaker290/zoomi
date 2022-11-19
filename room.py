@@ -4,6 +4,6 @@ class Room:
         self._start_y = 0 
         self.end_x = end_x
         self.end_y = end_y
-        self.barrier = barrier #dict? where we map out wach section of barrier 
-        self.cliff = cliff #dict ?
+        self.barrier = barrier #dictionary
+        self.cliff = cliff #dictionary
     

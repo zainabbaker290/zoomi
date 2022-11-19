@@ -48,6 +48,7 @@ class Zoomi:
     #so when it reaches end point go home - relaistically not good 
     def zoomi_movement(self):
         while (self.zoomi_x < self.room.end_x) and (self.zoomi_y < self.room.end_y):
+            print("moving")
             while self.room.end_y >  self.zoomi_y:
                 self.zoomi_forward(1)
                 for value in self.room.barrier.values():
@@ -106,7 +107,8 @@ class Zoomi:
         return self.set_zoomi_state("deactivated")
 
 #notes im putting for myself to discuss with team later 
-#it will ping the battery and dirt in main 
+#it will ping the battery and dirt in main
+# #maybe this can be in part two cause there is so much with this low key  
 #makes more sense 
 # ill make the code go to sleep or something 
 #cleaning mode will be activated through main 
