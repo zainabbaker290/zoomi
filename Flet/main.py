@@ -1,7 +1,7 @@
 import flet
 import sqlite3
 from flet.transform import Scale
-from flet import (AppBar, Dropdown, theme, ElevatedButton, Icon, Page, Row, Text, FilledTonalButton , IconButton, FloatingActionButton, border_radius,
+from flet import (AppBar, Dropdown, theme, ElevatedButton, Image,Icon, Page, Row, Text, FilledTonalButton , IconButton, FloatingActionButton, border_radius,
                   TextField, View, colors, dropdown, icons,AlertDialog,Card, filled_tonal_button,margin,padding, Container, TextButton, Column, alignment, SnackBar, NavigationBar, NavigationDestination)
 from scheduleWidgets import *
 from profileWidgets import *
@@ -16,6 +16,7 @@ def main(page: Page):
     page.window_height = 780
     output_text = Text()   
 
+    #runs when start cycle button pressed.
     def start_cycle(e):
         if profileSelection_dropdown.value=="Custom":
             userInputs=[mode_dropdown,laps_dropdown,speed_dropdown]
@@ -25,6 +26,7 @@ def main(page: Page):
         page.snack_bar.open = True
         close_dlg(e)
         page.update()
+    
     def check_for_custom(e):
         if profileSelection_dropdown.data == "edit":
             if profileSelection_dropdown.value == "Custom":
@@ -56,12 +58,15 @@ def main(page: Page):
 
     navBar.on_change = navbar_change
     profileSelection_dropdown.on_change = check_for_custom
-    
+    def card_on_hover(e):
+        e.control.content.elevation = 3 if e.data == "true" else 1
+        page.update()
     def open_dlg(dlg):
         page.dialog = dlg
         dlg.open = True
         page.update()
-        
+   
+        return
     def close_dlg(e):
         page.dialog.open = False
         page.update()
@@ -70,7 +75,7 @@ def main(page: Page):
         profilesDisplay = Column(controls = [])
         defaultProfile = fetch_default_profile_from_DB()
         defaultCard = Container(content=Row(controls=[
-                    Card(content=Column(controls=[
+                    Container(content=Card(content=Column(controls=[
                         Container(content=Row(controls =[
                             Text(value = "Default",style="titleMedium",color=onP)
                             ],
@@ -83,7 +88,7 @@ def main(page: Page):
                                 ),padding=padding.all(11))
                             ],
                             expand=True
-                        ),expand=True),
+                        ),expand=True),expand=True, on_hover=card_on_hover),
                         Card(content=Container(content=Column(controls=[
                             IconButton(icon=icons.EDIT_OUTLINED,icon_color=onPC, icon_size=20, height=40,width=40, on_click = open_default_profile_editor)
                             ],
@@ -92,14 +97,14 @@ def main(page: Page):
                             bgcolor=pC,border_radius=10
                         ))
                     ],spacing=0
-                ),                
+                ),           
             )
         profilesDisplay.controls.append(defaultCard)
         if profileDict:
             for object in profileDict:
                 profileIndex = object
                 profileCard = Row(controls=[
-                        Card(content=Column(controls=[
+                        Container(content=Card(content=Column(controls=[
                             Container(content=Row(controls =[
                                 Text(value = profileDict[object]["Name"],style="titleMedium",color=onT)
                             ],
@@ -111,8 +116,8 @@ def main(page: Page):
                                     ],alignment="spaceEvenly"
                                 ),padding=padding.all(11))
                                 ],
-                            ),expand=True),
-                        Card(content=Container(content=Column(controls=[
+                            ),expand=True),expand=True,on_hover=card_on_hover),
+                        Container(content=Card(content=Container(content=Column(controls=[
                                 IconButton(icon=icons.EDIT_OUTLINED,icon_color= onTC,icon_size=20, height=40,width=40, data=profileIndex, on_click = open_profile_editor),
                                 IconButton(icon=icons.DELETE_OUTLINED,icon_color= onTC,icon_size=20, height=40,width=40, data=profileIndex, on_click = delete_profile)],
                                 spacing=0
@@ -121,7 +126,7 @@ def main(page: Page):
                                 border_radius=border_radius.all(10)
                                 
                                 
-                            ))
+                            )))
                         ],spacing=0)
                     
                 
@@ -139,7 +144,7 @@ def main(page: Page):
                 if scheduleDict[schedule]["Profile"] == "Custom":
                     object = schedule
                     scheduleCard = Row(controls=[
-                        Card(content=Column(controls=[
+                        Container(content=(Card(content=Column(controls=[
                             Container(content=Row(controls =[
                                 Text(value = scheduleDict[object]["Name"],style="titleMedium",color=onT)
                             ],
@@ -152,7 +157,7 @@ def main(page: Page):
                                 )
                                 ,padding=padding.only(top=11)
                                 ),
-                            Container(Card(content=Container(content=Column(controls=[
+                            Container(content=Column(controls=[
                              
                             Container(content=Row(controls=[
                                     Text(value = scheduleDict[object]["Mode"],style="labelMedium"),
@@ -164,9 +169,8 @@ def main(page: Page):
                             ]
                             ),margin=margin.only(left=30,right=30,top=5,bottom=5),padding=padding.only(left=40,right=30,top=3,bottom=3)
                             )
-                            ),margin=margin.only(left=50,right=50,top=5,bottom=5),bgcolor=tC,border_radius=15)
                                 ],spacing=0
-                            ),expand=True),
+                            ),expand=True)),expand=True,on_hover=card_on_hover),
                         Card(content=Container(content=Column(controls=[
                                 IconButton(icon=icons.EDIT_OUTLINED,icon_color=onTC, icon_size=20,height=40,width=40, data=scheduleIndex, on_click = open_schedule_editor),
                                 IconButton(icon=icons.DELETE_OUTLINED, icon_color=onTC,icon_size=20, height=40,width=40, data=scheduleIndex, on_click = delete_schedule)],
@@ -182,7 +186,7 @@ def main(page: Page):
                 else:
                     object = schedule
                     scheduleCard = Row(controls=[
-                        Card(content=Column(controls=[
+                        Container(content=Card(content=Column(controls=[
                             Container(content=Row(controls =[
                                 Text(value = scheduleDict[object]["Name"],style="titleMedium",color=onT)
                             ],
@@ -196,7 +200,7 @@ def main(page: Page):
                                 ),padding=padding.all(11)),
                                 
                                 ],
-                            ),expand=True),
+                            ),expand=True),expand=True,on_hover=card_on_hover),
                         Card(content=Container(content=Column(controls=[
                                 IconButton(icon=icons.EDIT_OUTLINED,icon_color=onTC, icon_size=20, height=40,width=40, data=scheduleIndex, on_click = open_schedule_editor),
                                 IconButton(icon=icons.DELETE_OUTLINED, icon_color=onTC, icon_size=20, height=40,width=40, data=scheduleIndex, on_click = delete_schedule)],
@@ -211,6 +215,7 @@ def main(page: Page):
                     schedulesDisplay.controls.append(scheduleCard)
         else:
             schedulesDisplay.controls.append(Text(value="You haven't created any Scheduled Cleans. Try one out below!"))
+        schedulesDisplay.spacing=0
         return schedulesDisplay
 
     def delete_schedule(e):
@@ -513,12 +518,12 @@ def main(page: Page):
     
     def route_change(e):
         page.views.clear()
-        page.theme=theme.Theme(color_scheme_seed="green",use_material3=True)
+        appBar.title=(Text("Zoomi"))
         page.views.append(
             View(
                 "/",
                 [
-                    AppBar(title=Text("Zoomi"), center_title=True),
+                    appBar,Card(content=Image(src=f"placeholder.png",width=400,height=400)),
                     ElevatedButton("Start Cycle", on_click=open_start_cycle_menu),
                     navBar
                     
@@ -529,13 +534,15 @@ def main(page: Page):
         page.theme=theme.Theme(color_scheme_seed="#006781",use_material3=True)
         navBar.selected_index=1
         if page.route == "/schedules" or page.route == "/schedules/createschedule":
+            appBar.title=Text(value="Scheduled Cleans")
             s = fetch_schedules_from_DB()
             d = display_schedules(s)
             page.views.append(
                 View(
                     "/schedules",
                     
-                    [AppBar(title=Text("Scheduled Cleans"),center_title=True),d,
+                    [appBar,
+                    d,
                     FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createschedule),
                     navBar],scroll="auto"
                 )
@@ -544,13 +551,14 @@ def main(page: Page):
 
         if page.route == "/profiles" or page.route == "/profiles/createprofile":
             print(read_profiles_from_DB())
+            appBar.title=Text(value="Cleaning Profiles")
             p= parse_profiles(read_profiles_from_DB())
             d = display_profiles(p)
             page.views.append(
                 View(
                     "/profiles",
                     
-                    [AppBar(title=Text("Profiles"),center_title=True),d,
+                    [appBar,d,
                     FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createprofile),
                     navBar],
                 scroll="auto")
@@ -560,6 +568,7 @@ def main(page: Page):
         
 
         if page.route == "/schedules/createschedule":
+            appBar.title=Text(value="Create a Scheduled Clean")
             contents = []
             update_profile_selection_dropdown()
             profileSelection_dropdown.data = "create"
@@ -576,6 +585,7 @@ def main(page: Page):
             )
 
         elif page.route == "/profiles/createprofile":
+            appBar.title=Text("Create a Cleaning Profile")
             contents = createCleaningProfileContents
             contents.append(createprofilesubmit_btn)
             contents.append(output_text)
@@ -583,7 +593,7 @@ def main(page: Page):
             page.views.append(
                 View(
                     "/profiles/createprofile", 
-                    [AppBar(title=Text("Create Profile"),center_title=True),
+                    [appBar,
                     Row(controls=[profileNameInput]),
                     Container(content=Column(controls=[Row(controls=[modeText,]),Row(controls=[mode_dropdown,modeQ])])),
                     Column(controls=[Row(controls=[speedText]),Row(controls=[speed_dropdown,speedQ])]),
@@ -637,7 +647,7 @@ def main(page: Page):
         page.views.append(
             View(
                 "/profiles",
-                 [AppBar(title=Text("Profiles"),center_title=True),d,
+                 [appBar,d,
                  FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createprofile)
                 ,
                 navBar]))
@@ -651,9 +661,9 @@ def main(page: Page):
             View(
                 "/schedules",
                 
-                [AppBar(title=Text("Scheduled Cleans"),center_title=True),d,
+                [appBar,d,
                 FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createschedule),
-                navBar],scroll="auto"
+                navBar],scroll="auto",horizontal_alignment="center"
             )
         )
     
@@ -697,4 +707,4 @@ def main(page: Page):
     page.go(page.route)
 
 
-flet.app(target=main)
+flet.app(target=main,assets_dir="assets")

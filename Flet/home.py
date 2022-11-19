@@ -1,14 +1,16 @@
 from flet import NavigationBar,NavigationDestination,icons,Text
 from profileWidgets import *
 from scheduleWidgets import *
+
 navBar = NavigationBar(
     destinations=[
     NavigationDestination(icon=icons.CLEANING_SERVICES, label="Profiles"),
     NavigationDestination(icon=icons.HOME_ROUNDED, label="Home"),
     NavigationDestination(icon=icons.CALENDAR_MONTH_ROUNDED, label="Schedules")
-]
+])
 
-)
+appBar =AppBar(title=Text("Zoomi"),center_title=True)
+
 noCustomStartMenu = Column(controls=[
     Row(controls=[Text(value="Select a Cleaning Profile")]),
     Row(controls=[profileSelection_dropdown])],height=100,width=350)
