@@ -27,3 +27,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+#one this is after mid clean charge, idk if it goes back to cleaning 
