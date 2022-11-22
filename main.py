@@ -10,22 +10,20 @@ from zoomi import Zoomi
 
 def main():
     room_one = Room(100,100,{0:2,0:5},{18:9})
-    #issue with battery, chicken and egg 
     wheels = Wheels()
     sensors = Sensors(wheels)
     battery = Battery()
-    base_dock = BaseDock(battery,sensors)
     cleaning_mode = CleaningMode(sensors)
     dirt_compartment = DirtCompartment()
     light = Light()
-    zoomi = Zoomi(battery,sensors,light,dirt_compartment,cleaning_mode, wheels, base_dock, room_one)
+    base_dock = BaseDock(battery)
+    print(cleaning_mode)
+
+    zoomi = Zoomi(battery,sensors,light,dirt_compartment,cleaning_mode, wheels,room_one, base_dock)
+
 
     print(zoomi.set_zoomi_state("activated"))
-    print(zoomi.zoomi_movement())
-
-
-    
-
+    print(zoomi.activate_zoomi())
 
 if __name__ == "__main__":
     main()

@@ -1,27 +1,38 @@
 class Zoomi:
-    def __init__(self, Battery, Sensors, Light, DirtCompartment, CleaningMode, Wheels, BaseDock, Room) -> None:
+    def __init__(self, Battery, Sensors, Light, DirtCompartment, CleaningMode, Wheels, Room, BaseDock) -> None:
         self.battery = Battery
         self.sensors = Sensors
         self.light = Light
         self.dirt_compartment = DirtCompartment
         self.cleaning_mode = CleaningMode
         self.wheels = Wheels
-        self.base_dock = BaseDock
         self.state = "deactivated"
         self.zoomi_x = 0 
         self.zoomi_y = 0
         self.room = Room
         self.location = self.zoomi_x, self.zoomi_y
         self.saved_location = None
+        self.base_dock = BaseDock
 
     def set_zoomi_state(self,state):
         self.state = state 
+        print("zoomi is now " + self.state)
     
+    def base_dock_charges(self):
+        while self.location == self.base_dock.call_zoomi_home() and self.battery.get_battery_level() < 100:
+            self.battery.charging_battery()
+        return print("battery is fully charged at " + str(self.battery.get_battery_level()))
+
     def mid_clean_charge(self):
+        print("zoomi is entering a sleep state")
         self.set_zoomi_state("sleep")
+        print(self.state)
+        print("en route to base dock")
         self.navigate_home(self.location)
+        print("at home")
         self.light.set_light("orange")
-        return self.battery.get_battery_level()
+        self.battery.charging_battery()
+        self.base_dock_charges()
     
     def zoomi_forward(self, forward_movement):
         self.zoomi_y += forward_movement
@@ -43,9 +54,14 @@ class Zoomi:
         self.location = self.zoomi_x,self.zoomi_y
         return self.location
     
-    #i dont know how this is going to work, feel its going to do my diagram
-    #okay to fix diagram thing i did a whole x meets the spot thing like in a tresure hunt 
-    #so when it reaches end point go home - relaistically not good 
+    def navigate_home(self,saved_location = None):
+        if self.saved_location != None:
+            self.saved_location = self.location
+        self.zoomi_backward(self.zoomi_y)
+        self.zoomi_left(self.zoomi_x)
+        self.base_dock_charges()
+        return self.location
+
     def zoomi_movement(self):
         while (self.zoomi_x < self.room.end_x) and (self.zoomi_y < self.room.end_y):
             print("moving")
@@ -54,10 +70,12 @@ class Zoomi:
                 for value in self.room.barrier.values():
                     if self.zoomi_y == value:
                         self.sensors.barrier_detected()
+                        print("barrier detected")
                         self.zoomi_right(1)
                 for value in self.room.cliff.values():
                     if self.zoomi_y == value:
                         self.sensors.cliff_detected()
+                        print("cliff detected")
                         self.zoomi_right(1)
 
             if self.room.end_y == self.zoomi_y:
@@ -70,30 +88,27 @@ class Zoomi:
                 for value in self.room.barrier.values():
                     if self.zoomi_y == value:
                         self.sensors.barrier_detected()
+                        print("barrier detected")
                         self.zoomi_right(1)
                 for value in self.room.cliff.values():
                     if self.zoomi_y == value:
                         self.sensors.cliff_detected()
+                        print("cliff detected")
                         self.zoomi_right(1)
             
             if self.room._start_y == self.zoomi_y:
                 self.wheels.turn_wheels()
                 self.zoomi_right(1) 
-                
-        
+
+        print("finshed cleaning, going home")        
         self.navigate_home()
         
-    def navigate_home(self,saved_location = None):
-        if self.saved_location != None:
-            self.saved_location = self.location
-        self.zoomi_backward(self.zoomi_y)
-        self.zoomi_left(self.zoomi_x)
-        return self.location
-
     def activate_zoomi(self):
         if self.battery.get_battery_level() <= 10:
+            print("battery low, going home to recharge")
             self.mid_clean_charge()
         elif self.state == "sleep":
+            print("returning to last cleaned location")
             self.zoomi_forward(self.saved_location[0])
             self.zoomi_right(self.saved_location[1])
 
@@ -101,14 +116,5 @@ class Zoomi:
     
         self.set_zoomi_state("active")
         self.light.set_light("green")
-        self.battert.set_battery_level(-10)
-        self.dirt_compartment.set_dirt_level(10)
-
+        self.zoomi_movement()
         return self.set_zoomi_state("deactivated")
-
-#notes im putting for myself to discuss with team later 
-#it will ping the battery and dirt in main
-# #maybe this can be in part two cause there is so much with this low key  
-#makes more sense 
-# ill make the code go to sleep or something 
-#cleaning mode will be activated through main 
