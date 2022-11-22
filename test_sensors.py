@@ -3,7 +3,6 @@ from unittest.mock import Mock
 import sensors
 
 
-
 class TestSensors(unittest.TestCase):
 
     def test_set_floor_type_carpet(self):
