@@ -1,15 +1,10 @@
-import flet
-import sqlite3
-from math import pi
-from flet.transform import Scale
-from flet import (AppBar, Dropdown, UserControl,theme, ElevatedButton, Image,Icon, Page, Row, Text, FilledTonalButton , IconButton, FloatingActionButton, border_radius,
-                  TextField, View, colors, dropdown, icons,AlertDialog,Card, filled_tonal_button,margin,padding, Container, TextButton, Column, alignment, SnackBar, NavigationBar, NavigationDestination)
-from scheduleWidgets import *
-from profileWidgets import *
-from profiles import *
-from schedules import *
-from home import *
+
+from database import *
 from theme import *
+from widgets import *
+
+from flet import (SnackBar, Text, UserControl)
+
 
 class MasterPage(UserControl):
     def __init__(self):
@@ -47,22 +42,27 @@ class MasterPage(UserControl):
             
     def card_on_hover(self,e):
         e.control.content.elevation = 3 if e.data == "true" else 1
+        self.update()
         self.page.update()
+
     def verify_create_name(self,existingObjects,input):
         for object in existingObjects:
-            print(existingObjects[object]["Name"])
             if existingObjects[object]["Name"] == input.value:
                 input.error_text = "This name has already been used."
+                self.update()
                 self.page.update()
                 return False
         else: 
             input.error_text = None
+            self.update()
+            self.page.update()
             return True
 
     def verify_edit_name(self,existingObjects,index,input):
         fail = False
         if not input.value:
             input.error_text = "Please Enter Name."
+            self.update()
             self.page.update()
             return False
         print(existingObjects)
@@ -72,15 +72,17 @@ class MasterPage(UserControl):
             print("editor index",input)
             if existingObjects[profileIndex]["Name"] == input.value and profileIndex != index:
                 input.error_text = "This name has already been used."
+                self.update()
                 self.page.update()
                 fail = True
         if fail:
             return False
         else:
             input.error_text = None
+            self.update()
             self.page.update()
             return True
-            
+
     def card_on_hover(self,e):
         e.control.content.elevation = 3 if e.data == "true" else 1
         self.update()

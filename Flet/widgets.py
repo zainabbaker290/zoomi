@@ -1,19 +1,80 @@
-import flet
-from flet import AppBar, Container,ElevatedButton, Page, Text, View, Column, padding,colors,margin,Row,Dropdown,ResponsiveRow, Icon, colors, icons, ElevatedButton, Page, Text, dropdown, TextField
-from profiles import fetch_profiles_from_DB
-from profileWidgets import *
 from theme import *
+
+from flet import (AppBar, Column, Container, Dropdown, Icon,
+                  NavigationBar, NavigationDestination, Row, Text, TextField, dropdown, icons, padding)
+
+navBar = NavigationBar(
+    destinations=[
+    NavigationDestination(icon=icons.CLEANING_SERVICES, label="Profiles"),
+    NavigationDestination(icon=icons.HOME_ROUNDED, label="Home"),
+    NavigationDestination(icon=icons.CALENDAR_MONTH_ROUNDED, label="Schedules")
+])
+
+appBar =AppBar(title=Text("Home"),center_title=True)
+
+modeText = Text(value="Choose a Mode", size=16, expand=True)
+
+lapsText = Text(value="Choose How Many Laps",size=16,expand = True)
+
+speedText = Text(value="Choose a Speed",size=16,expand=True)
+
 dayText = Text(value="Choose a Day",size=16, expand=True)
+
 timeText = Text(value="Choose a Time",size=16, expand=True)
+
 reccuranceText = Text(value="Choose the Repititon",size=16, expand=True)
+
 profileSelectionText = Text(value="Choose a Cleaning Profile",size=16, expand=True)
 
-dayQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="describe modes")
-timeQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="describe modes")
-reccuranceQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="describe modes")
-profileSelectionQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="describe modes")
+modeQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="placeholder for tooltip - to be added later")
+
+lapsQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="splaceholder for tooltip - to be added later")
+
+speedQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="dplaceholder for tooltip - to be added later")
+
+dayQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="placeholder for tooltip - to be added later")
+
+timeQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="placeholder for tooltip - to be added later")
+
+reccuranceQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="placeholder for tooltip - to be added later")
+
+profileSelectionQ = Icon(name=icons.INFO_OUTLINE_ROUNDED, tooltip="placeholder for tooltip - to be added later")
 
 scheduleNameInput = TextField(label="Name", hint_text="My Scheduled Clean",expand=True)
+
+profileNameInput = TextField(label="Name", hint_text="My Cleaning Profile", expand=True, autofocus=True)
+
+mode_dropdown = Dropdown(
+    expand=True,
+    label="Mode",
+    hint_text="Choose your Cleaning Mode",
+    options=[
+        dropdown.Option("Automatic"),
+        dropdown.Option("Turbo"),
+        dropdown.Option("Green"),
+    ],
+)
+speed_dropdown = Dropdown(
+    expand=True,
+    label="Speed",
+    hint_text="Choose your Speed",
+    options=[
+        dropdown.Option("Default"),
+        dropdown.Option("Quick Clean"),
+        dropdown.Option("Deep Clean"),
+    ],
+)
+laps_dropdown = Dropdown(
+    expand=True,
+    label="Laps",
+    hint_text="Choose your Number of Laps",
+    options=[
+        dropdown.Option("One Lap"),
+        dropdown.Option("Two Laps"),
+        dropdown.Option("Three Laps"),
+    ],
+)
+
 day_dropdown = Dropdown(
         expand=True,
         label="Day",
@@ -28,6 +89,7 @@ day_dropdown = Dropdown(
             dropdown.Option("Sunday"),
         ],
     )
+
 hours_dropdown = Dropdown(
     expand=True,
     label="Hours",
@@ -47,6 +109,7 @@ hours_dropdown = Dropdown(
             dropdown.Option("12")
         ],
     )
+
 minutes_dropdown = Dropdown(
     expand=True,
     autofocus=True,
@@ -67,6 +130,7 @@ minutes_dropdown = Dropdown(
             dropdown.Option("55"),
         ],
     )
+
 amPm_dropdown = Dropdown(
     expand=True,
     label="Time",
@@ -76,6 +140,7 @@ amPm_dropdown = Dropdown(
             dropdown.Option("PM"),
         ],
     )
+
 repetition_dropdown = Dropdown(
         expand=True,
         label="Repetitions",
@@ -99,8 +164,6 @@ profileSelection_dropdown = Dropdown(
         
     )
 
-
-
 createScheduledCleanContents =[AppBar(title=Text("Create a Scheduled Clean"),center_title=True),Column(controls=[
     Row(controls=[scheduleNameInput]),
     Row(controls=[dayText]),
@@ -112,6 +175,7 @@ createScheduledCleanContents =[AppBar(title=Text("Create a Scheduled Clean"),cen
     Row(controls=[profileSelectionText]),
     Row(controls=[profileSelection_dropdown, profileSelectionQ])])
     ]
+
 noCustomEditMenu=Container(content=Column(controls=(
             Container(content=Row(controls=[scheduleNameInput]),padding=padding.only(top=10)),
             Row(controls=[day_dropdown, dayQ]),
@@ -128,3 +192,55 @@ withCustomEditMenu = Container(content=Column(controls=(
             Row(controls=[mode_dropdown,laps_dropdown, speed_dropdown])),width=350,height=280,scroll="auto",auto_scroll=True))
 
 configureCleaningProfileContents = [Row(controls=[mode_dropdown,laps_dropdown, speed_dropdown])]
+
+noCustomStartMenu = Column(controls=[
+    Row(controls=[Text(value="Select a Cleaning Profile")]),
+    Row(controls=[profileSelection_dropdown])],height=100,width=350)
+
+withCustomStartMenu =Column(controls=[
+    Row(controls=[profileSelection_dropdown]),
+    Row(controls=[mode_dropdown,modeQ]),
+    Row(controls=[speed_dropdown,speedQ]),
+    Row(controls=[laps_dropdown,lapsQ])],height=330,width=350,alignment="spaceEvenly")
+
+createCleaningProfileContents = [AppBar(title=Text("Create Profile"),center_title=True),Column(controls=[
+    Row(controls=[profileNameInput]),
+    Row(controls=[modeText,modeQ]),
+    mode_dropdown,
+    Row(controls=[speedText,speedQ]),
+    speed_dropdown,
+    Row(controls=[lapsText,lapsQ]),
+    laps_dropdown],alignment = "spaceAround")
+    ]
+
+def clear_schedule_values():
+    scheduleNameInput.error_text = None
+    day_dropdown.error_text = None
+    hours_dropdown.error_text = None
+    minutes_dropdown.error_text = None
+    amPm_dropdown.error_text = None
+    repetition_dropdown.error_text = None
+    profileSelection_dropdown.error_text = None
+    mode_dropdown.error_text = None
+    speed_dropdown.error_text = None
+    laps_dropdown.error_text = None
+    scheduleNameInput.value = None
+    day_dropdown.value = None
+    hours_dropdown.value = None
+    minutes_dropdown.value = None
+    amPm_dropdown.value = None
+    repetition_dropdown.value = None
+    profileSelection_dropdown.value = None
+    mode_dropdown.value = None
+    speed_dropdown.value = None
+    laps_dropdown.value = None
+
+def clear_profile_values():
+        profileNameInput.error_text = None
+        mode_dropdown.error_text = None
+        speed_dropdown.error_text = None
+        laps_dropdown.error_text = None
+        profileNameInput.value = None
+        mode_dropdown.value = None
+        speed_dropdown.value = None
+        laps_dropdown.value = None

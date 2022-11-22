@@ -1,16 +1,15 @@
-import flet
-import sqlite3
-from math import pi
-from flet.transform import Scale
-from flet import (AppBar, Dropdown, UserControl,theme, ElevatedButton, Image,Icon, Page, Row, Text, FilledTonalButton , IconButton, FloatingActionButton, border_radius,
-                  TextField, View, colors, dropdown, icons,AlertDialog,Card, filled_tonal_button,margin,padding, Container, TextButton, Column, alignment, SnackBar, NavigationBar, NavigationDestination)
-from scheduleWidgets import *
-from profileWidgets import *
-from profiles import *
-from schedules import *
-from home import *
+from pages.MasterPage import MasterPage
+from database import *
+
 from theme import *
-from MasterPage import MasterPage
+from widgets import *
+
+from flet import (AlertDialog, Card, Column, Container, IconButton, Row, SnackBar, Text, TextButton,
+                  border_radius,
+                  icons, margin,
+                  padding)
+
+
 
 class SchedulesPage(MasterPage):
     def __init__(self,page):
@@ -174,7 +173,8 @@ class SchedulesPage(MasterPage):
                             ],spacing=0)
                         schedulesDisplay.controls.append(scheduleCard)
             else:
-                schedulesDisplay.controls.append(Text(value="You haven't created any Scheduled Cleans. Try one out below!"))
+                schedulesDisplay.controls.append(Card(content=Container(content=Row(controls=[Text(value="You have no Schedules. Make one below!")],
+            alignment="center"),padding=padding.all(25))))
             schedulesDisplay.spacing=0
             return schedulesDisplay
 

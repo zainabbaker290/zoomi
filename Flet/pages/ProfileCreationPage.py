@@ -1,16 +1,11 @@
-import flet
-import sqlite3
-from math import pi
-from flet.transform import Scale
-from flet import (AppBar, Dropdown, UserControl,theme, ElevatedButton, Image,Icon, Page, Row, Text, FilledTonalButton , IconButton, FloatingActionButton, border_radius,
-                  TextField, View, colors, dropdown, icons,AlertDialog,Card, filled_tonal_button,margin,padding, Container, TextButton, Column, alignment, SnackBar, NavigationBar, NavigationDestination)
-from scheduleWidgets import *
-from profileWidgets import *
-from profiles import *
-from schedules import *
-from home import *
+
+from database import *
+from pages.MasterPage import MasterPage
 from theme import *
-from MasterPage import MasterPage
+from widgets import *
+
+from flet import (AlertDialog, Column, Container, ElevatedButton, Row, SnackBar, Text, TextButton)
+
 
 class ProfileCreationPage(MasterPage):
     def __init__(self,page):
