@@ -7,7 +7,9 @@ from room import Room
 from sensors import Sensors
 from wheels import Wheels
 from zoomi import Zoomi
+from graphicalzoomi import GraphicalZoomi
 
+       
 def main():
     room_one = Room(100,100,{0:2,0:5},{18:9})
     wheels = Wheels()
@@ -18,12 +20,10 @@ def main():
     light = Light()
     base_dock = BaseDock(battery)
     print(cleaning_mode)
-
-    zoomi = Zoomi(battery,sensors,light,dirt_compartment,cleaning_mode, wheels,room_one, base_dock)
-
-
+    zoomi = GraphicalZoomi(battery,sensors,light,dirt_compartment,cleaning_mode, wheels,room_one, base_dock)
     print(zoomi.set_zoomi_state("activated"))
     print(zoomi.activate_zoomi())
+    
 
 if __name__ == "__main__":
     main()

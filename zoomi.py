@@ -1,3 +1,4 @@
+
 class Zoomi:
     def __init__(self, Battery, Sensors, Light, DirtCompartment, CleaningMode, Wheels, Room, BaseDock) -> None:
         self.battery = Battery
@@ -37,21 +38,25 @@ class Zoomi:
     def zoomi_forward(self, forward_movement):
         self.zoomi_y += forward_movement
         self.location = self.zoomi_x,self.zoomi_y
+        print(self.location)
         return self.location
 
     def zoomi_backward(self, backward_movement):
         self.zoomi_y -= backward_movement
         self.location = self.zoomi_x,self.zoomi_y
+        print(self.location)
         return self.location
     
     def zoomi_right(self, right_movement):
         self.zoomi_x += right_movement
         self.location = self.zoomi_x,self.zoomi_y
+        print(self.location)
         return self.location
     
     def zoomi_left(self,left_movement):
         self.zoomi_x -= left_movement
         self.location = self.zoomi_x,self.zoomi_y
+        print(self.location)
         return self.location
     
     def navigate_home(self,saved_location = None):
@@ -113,7 +118,7 @@ class Zoomi:
             self.zoomi_right(self.saved_location[1])
 
         self.dirt_compartment.warn_user()
-    
+
         self.set_zoomi_state("active")
         self.light.set_light("green")
         self.zoomi_movement()
