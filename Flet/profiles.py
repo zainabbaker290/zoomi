@@ -111,6 +111,10 @@ def write_updated_default_profile_to_DB():
     clear_profile_values()
 
 def clear_profile_values():
+        profileNameInput.error_text = None
+        mode_dropdown.error_text = None
+        speed_dropdown.error_text = None
+        laps_dropdown.error_text = None
         profileNameInput.value = None
         mode_dropdown.value = None
         speed_dropdown.value = None

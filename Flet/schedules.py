@@ -97,6 +97,16 @@ def update_profile_selection_dropdown():
         profileSelection_dropdown.options.append(dropdown.Option(name))
 
 def clear_schedule_values():
+    scheduleNameInput.error_text = None
+    day_dropdown.error_text = None
+    hours_dropdown.error_text = None
+    minutes_dropdown.error_text = None
+    amPm_dropdown.error_text = None
+    repetition_dropdown.error_text = None
+    profileSelection_dropdown.error_text = None
+    mode_dropdown.error_text = None
+    speed_dropdown.error_text = None
+    laps_dropdown.error_text = None
     scheduleNameInput.value = None
     day_dropdown.value = None
     hours_dropdown.value = None

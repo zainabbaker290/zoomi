@@ -1,7 +1,6 @@
-from flet import NavigationBar,NavigationDestination,icons,Text
+from flet import NavigationBar,NavigationDestination,icons,Text,AlertDialog,TextButton
 from profileWidgets import *
 from scheduleWidgets import *
-
 navBar = NavigationBar(
     destinations=[
     NavigationDestination(icon=icons.CLEANING_SERVICES, label="Profiles"),
@@ -20,3 +19,4 @@ withCustomStartMenu =Column(controls=[
     Row(controls=[mode_dropdown,modeQ]),
     Row(controls=[speed_dropdown,speedQ]),
     Row(controls=[laps_dropdown,lapsQ])],height=330,width=350,alignment="spaceEvenly")
+

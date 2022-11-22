@@ -1,14 +1,17 @@
 import flet
-import sqlite3
 from math import pi
-from flet.transform import Scale
 from flet import (AppBar, Dropdown, theme, ElevatedButton, Image,Icon, Page, Row, Text, FilledTonalButton , IconButton, FloatingActionButton, border_radius,
                   TextField, View, colors, dropdown, icons,AlertDialog,Card, filled_tonal_button,margin,padding, Container, TextButton, Column, alignment, SnackBar, NavigationBar, NavigationDestination)
+from ScheduleCreationPage import ScheduleCreationPage
+from ProfileCreationPage import ProfileCreationPage
+from SchedulesPage import SchedulesPage
 from scheduleWidgets import *
 from profileWidgets import *
 from profiles import *
 from schedules import *
 from home import *
+from ProfilesPage import ProfilesPage
+from HomePage import HomePage
 from theme import *
 
 zoomiBatteryPercentage = 100
@@ -546,59 +549,12 @@ def main(page: Page):
     def route_change(e):
         page.views.clear()
         appBar.title=(Text("Home"))
-        status = "Standby"
-        batteryIcon = determineBatteryIcon()
-        capacityIcon = determineCapacityIcon()
-        statusIcon = determineStatusIcon()
+        homePage=HomePage(page)
         page.views.append(
             View(
                 "/",
-                [
-                    appBar,
-                    Column(
-                        controls=[
-                            # Row(controls=[
-                            #     Text(value="My Zoomi Robot", style="titleLarge"),
-                            #     statusIcon
-                            #     ]
-                            # ),
-                            Card(content=
-                                    Column(
-                                        controls=[
-                                        Row(controls=[
-                                            Text(value="Welcome Home",style="titleLarge"),
-                                        ]
-                                        ),
-                                        Image(src=f"roomba.png",width=200,height=200),
-                                        Row(controls=[
-                                            Text(value=status,style="titleMedium"),
-                                            statusIcon
-                                        ]
-                                        ),
-                                        Row(
-                                            controls=[
-                                                Row(controls=[
-                                                    Text(value="Battery"),
-                                                    batteryIcon]),
-                                                Row(controls=[
-                                                    Text(value="Capacity"),
-                                                    capacityIcon])
-                                            ]
-                                        ),
-                                        
-                                        
-                                        ]
-                                    )           
-                                )
-                        ],
-                        horizontal_alignment="center"
-                        
-                    ),
-                    ElevatedButton("Start Cycle", on_click=open_start_cycle_menu),
-                    navBar
-                    
-                ],
-                horizontal_alignment="center"
+                
+                    [appBar,homePage,navBar]
                 )
             )
         page.theme_mode="light"
@@ -607,14 +563,13 @@ def main(page: Page):
 
         if page.route == "/schedules" or page.route == "/schedules/createschedule":
             appBar.title=Text(value="Scheduled Cleans")
-            s = fetch_schedules_from_DB()
-            d = display_schedules(s)
+            schedulesDisplay = SchedulesPage(page)
             page.views.append(
                 View(
                     "/schedules",
                     
                     [appBar,
-                    d,
+                    schedulesDisplay,
                     FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createschedule),
                     navBar],
                     scroll="auto"
@@ -623,10 +578,8 @@ def main(page: Page):
             navBar.selected_index=2
 
         if page.route == "/profiles" or page.route == "/profiles/createprofile":
-            print(read_profiles_from_DB())
             appBar.title=Text(value="Cleaning Profiles")
-            parsedProfile= parse_profiles(read_profiles_from_DB())
-            profilesDisplay = display_profiles(parsedProfile)
+            profilesDisplay = ProfilesPage(page)
             page.views.append(
                 View(
                     "/profiles",
@@ -643,19 +596,11 @@ def main(page: Page):
 
         if page.route == "/schedules/createschedule":
             appBar.title=Text(value="Create a Scheduled Clean")
-            contents = []
-            update_profile_selection_dropdown()
-            profileSelection_dropdown.data = "create"
-
-            for widget in createScheduledCleanContents:
-                contents.append(widget)
-
-            contents.append(createschedulesubmit_btn)
-            contents.append(output_text)
+            createSchedulePage = ScheduleCreationPage(page)
             page.views.append(
                 View(
                     "/schedules/createschedule", 
-                    [contents],scroll="auto"
+                    [appBar, createSchedulePage],scroll="auto"
                     
                 )
             )
@@ -666,15 +611,12 @@ def main(page: Page):
             contents.append(createprofilesubmit_btn)
             contents.append(output_text)
             page.vertical_alignment="spaceAround"
+            createProfilePage =ProfileCreationPage(page)
             page.views.append(
                 View(
                     "/profiles/createprofile", 
                     [appBar,
-                    Row(controls=[profileNameInput]),
-                    Container(content=Column(controls=[Row(controls=[modeText,]),Row(controls=[mode_dropdown,modeQ])])),
-                    Column(controls=[Row(controls=[speedText]),Row(controls=[speed_dropdown,speedQ])]),
-                    Column(controls=[Row(controls=[lapsText]),Row(controls=[laps_dropdown,lapsQ])]),
-                    createprofilesubmit_btn
+                    createProfilePage
                     ],
                     horizontal_alignment="center"
                         
@@ -718,6 +660,7 @@ def main(page: Page):
         page.update()
 
     def refresh_profiles():
+        print("ddd")
         p= parse_profiles(read_profiles_from_DB())
         d = display_profiles(p)
         page.views.pop()
@@ -754,11 +697,17 @@ def main(page: Page):
     # page.overlay.append(pw)
 
     def view_pop_noe():
+        page.snack_bar.open = False
+        clear_profile_values()
+        clear_schedule_values()
         page.views.pop()
         top_view = page.views[-1]
         page.go(top_view.route)
 
     def view_pop(e):
+        page.snack_bar.open = True
+        clear_profile_values()
+        clear_schedule_values()
         print("View pop:", e.view)
         page.views.pop()
         top_view = page.views[-1]
@@ -783,6 +732,5 @@ def main(page: Page):
         page.go("/schedules/createschedule")
 
     page.go(page.route)
-
 
 flet.app(target=main,assets_dir="assets")
