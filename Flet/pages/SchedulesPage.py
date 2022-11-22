@@ -1,14 +1,11 @@
-from pages.MasterPage import MasterPage
 from database import *
-
+from pages.MasterPage import MasterPage
 from theme import *
 from widgets import *
 
-from flet import (AlertDialog, Card, Column, Container, IconButton, Row, SnackBar, Text, TextButton,
-                  border_radius,
-                  icons, margin,
+from flet import (AlertDialog, Card, Column, Container, IconButton, Row,
+                  SnackBar, Text, TextButton, border_radius, icons, margin,
                   padding)
-
 
 
 class SchedulesPage(MasterPage):

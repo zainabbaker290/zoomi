@@ -8,19 +8,13 @@ from theme import *
 from widgets import *
 
 import flet
-from flet import (FloatingActionButton,
-                  Page, Text, View, icons, theme)
+from flet import FloatingActionButton, Page, Text, View, icons, theme
 
-zoomiBatteryPercentage = 100
-zoomiState= "deactivated"
-zoomiBagPercentage = 0
-zoomiFlipped= False
 
-def main(page: Page):
+def fletmain(page: Page):
     page.window_resizable=False
     page.window_width= 500
     page.window_height = 780 
-    
 
     def navbar_change(e):
         if navBar.selected_index == 0:
@@ -135,4 +129,4 @@ def main(page: Page):
 
     page.go(page.route)
 
-flet.app(target=main,assets_dir="assets")
+flet.app(target=fletmain,assets_dir="assets")

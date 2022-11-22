@@ -27,23 +27,18 @@ class HomePage(MasterPage):
         statusIcon = self.determineStatusIcon()
         return Column(
                     controls=[
-                        # Row(controls=[
-                        #     Text(value="My Zoomi Robot", style="titleLarge"),
-                        #     statusIcon
-                        #     ]
-                        # ),
                         Card(content=
                                 Column(
                                     controls=[
                                     Row(controls=[
-                                        Text(value="Welcome Home",style="titleLarge"),
-                                     ]
+                                        Text(value="Welcome Home!",style="titleLarge"),
+                                     ],alignment="center"
                                      ),
                                     Image(src=f"roomba.png",width=200,height=200),
                                     Row(controls=[
                                          Text(value=self.zoomiState,style="titleMedium"),
                                          statusIcon
-                                     ]
+                                     ],alignment="center"
                                      ),
                                     Row(
                                         controls=[
@@ -53,12 +48,12 @@ class HomePage(MasterPage):
                                             Row(controls=[
                                                 Text(value="Capacity"),
                                                 capacityIcon])
-                                        ]
+                                        ],alignment="center"
                                     ),
                                     
                                     
-                                    ]
-                                )           
+                                    ],horizontal_alignment="center"
+                                )      
                             ),
                             ElevatedButton("Start Cycle", on_click=self.open_start_cycle_menu)
                             ],

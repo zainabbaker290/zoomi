@@ -1,4 +1,3 @@
-
 from database import *
 from theme import *
 from widgets import *
@@ -11,8 +10,10 @@ class MasterPage(UserControl):
         self.page = None
         super().__init__()
         return
+
     def build(self):
         return
+
     def close_dlg(self,e):
         self.page.dialog.open = False
         self.page.update()
