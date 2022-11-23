@@ -2,7 +2,7 @@ class CleaningProfile():
     def __init__(self, Sensor):
         self.power = "default"
         self.speed = "default"
-        self.zoomi_laps = 1
+        self.laps = 2
         self.sensor= Sensor
         self.floor = self.sensor.get_floor_type()
 
@@ -35,10 +35,10 @@ class CleaningProfile():
         return self.speed
 
     def set_laps(self,laps):
-        self.zoomi_laps = laps 
+        self.laps = laps 
     
     def get_laps(self):
-        return self.zoomi_laps
+        return self.laps
     
     def __str__(self):
         return 'The power of the zoomi is currently on ' + self.get_power() + " and the speed is currently at " + self.get_speed() + ". " + " It is currently sensing a " + self.get_floor() + " floor type and will do " + str(self.get_laps()) + " laps"

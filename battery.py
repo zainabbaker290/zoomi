@@ -2,7 +2,7 @@ import time
 class Battery:
     def __init__(self):
         #all zoomis start with 50% battery 
-        self.battery_level = 22
+        self.battery_level = 50
     
     def get_battery_level(self):
         return self.battery_level

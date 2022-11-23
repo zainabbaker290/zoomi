@@ -10,8 +10,8 @@ class GraphicalZoomi:
         self.battery = Battery
         self.sensors = Sensors
         self.light = Light
-        self.dirt_compartment = DirtCompartment
-        self.cleaning_mode = CleaningMode
+        self.dirtCompartment = DirtCompartment
+        self.cleaningProfile = CleaningMode
         self.wheels = Wheels
         self.state = "deactivated"
         self.x = 0 
@@ -101,9 +101,9 @@ class GraphicalZoomi:
         self.y += forward_movement
         self.location = self.x,self.y
         self.battery.set_battery_level(-0.2)
-        self.dirt_compartment.set_dirt_level(3)
-        if self.dirt_compartment.get_dirt_level() > 90:
-            self.dirt_compartment.warn_user()
+        self.dirtCompartment.set_dirt_level(3)
+        if self.dirtCompartment.get_dirt_level() > 90:
+            self.dirtCompartment.warn_user()
         self.turtleDot.goto(self.location)
         print(self.location)
         return self.location
@@ -112,7 +112,7 @@ class GraphicalZoomi:
         self.y -= backward_movement
         self.location = self.x,self.y
         self.battery.set_battery_level(-0.2)
-        self.dirt_compartment.set_dirt_level(3)
+        self.dirtCompartment.set_dirt_level(3)
         self.turtleDot.goto(self.location)
         print(self.location)
         return self.location
@@ -121,7 +121,7 @@ class GraphicalZoomi:
         self.x += right_movement
         self.location = self.x,self.y
         self.battery.set_battery_level(-0.2)
-        self.dirt_compartment.set_dirt_level(3)
+        self.dirtCompartment.set_dirt_level(3)
         self.turtleDot.goto(self.location)
         print(self.location)
         return self.location
@@ -130,7 +130,7 @@ class GraphicalZoomi:
         self.x -= left_movement
         self.location = self.x,self.y
         self.battery.set_battery_level(-0.2)
-        self.dirt_compartment.set_dirt_level(3)
+        self.dirtCompartment.set_dirt_level(3)
         self.turtleDot.goto(self.location)
         print(self.location)
         return self.location
@@ -180,7 +180,7 @@ class GraphicalZoomi:
 
     def random_move(self, amnt):
             self.battery.set_battery_level(-0.01)
-            self.dirt_compartment.set_dirt_level(0.001)
+            self.dirtCompartment.set_dirt_level(0.001)
             self.x += amnt * math.cos(math.radians(self.rotation + 90))
             self.y -= amnt * math.sin(math.radians(self.rotation + 90))
             self.lastY = self.y
@@ -231,18 +231,18 @@ class GraphicalZoomi:
         while (completionPercentage<90): #room not clean
             completionPercentage = len(self.cleanedArea)/self.room.area
             battery = self.battery.get_battery_level()
-            dirtLevel = self.dirt_compartment.get_dirt_level()
+            dirtLevel = self.dirtCompartment.get_dirt_level()
             print(completionPercentage)
             if completionPercentage >0.90:
-                print("finshed cleaning, going home")        
-                self.navigate_home()
+                self.cleanedArea = []
+                return
             if battery < 20.0:
                 print("going for a mid_clean_charge")
                 self.mid_clean_charge()
             if dirtLevel > 90.0:
-                self.dirt_compartment.warn_user()
+                self.dirtCompartment.warn_user()
             if dirtLevel > 99.0:
-                self.dirt_compartment.wait_for_user()
+                self.dirtCompartment.wait_for_user()
             self.random_move(1)
             if self.collision_check():
                 self.rotate(random.randint(0,360))
@@ -260,9 +260,14 @@ class GraphicalZoomi:
         if self.battery.get_battery_level() <= 10:
             print("battery low, going home to recharge")
             self.mid_clean_charge()
-        self.dirt_compartment.warn_user()
+        self.dirtCompartment.warn_user()
         self.set_zoomi_state("active")
         self.light.set_light("green")
         self.zoomi_movement()
-        self.cleanedArea = []
+        if self.cleaningProfile.laps >1:
+            self.zoomi_movement()
+        if self.cleaningProfile.laps >2:
+            self.zoomi_movement
+        print("cleaning done")
+        self.navigate_home()
         return self.set_zoomi_state("deactivated")
