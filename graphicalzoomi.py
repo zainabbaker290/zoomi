@@ -1,9 +1,10 @@
+
 import turtle
 import tkinter as tk
 from tkinter import ttk
 import math
 import random
-
+import time
 
 class GraphicalZoomi:
     def __init__(self, Battery, Sensors, Light, DirtCompartment, CleaningMode, Wheels, Room, BaseDock) -> None:
@@ -24,6 +25,12 @@ class GraphicalZoomi:
         self.base_dock = BaseDock
         self.rotation = 180
         self.initialiseTurtle()
+        if self.cleaningProfile.speed == "fast":
+            self.delay = 0
+        if self.cleaningProfile.speed == "slow":
+            self.delay = 0.04
+        else:
+            self.delay = 0.02
 
     def draw_obstacles(self):
         for object in self.room.barrier:
@@ -70,7 +77,7 @@ class GraphicalZoomi:
         screen.tracer()
         self.turtleDot.goto(0, 0) 
         self.turtleDot.color('orange')
-        self.turtleDot.speed(10) 
+        self.turtleDot.speed(3) 
         self.turtleDot.width(2) 
 
     
@@ -179,6 +186,7 @@ class GraphicalZoomi:
         self.turtleDot.goto(self.location)
 
     def random_move(self, amnt):
+            time.sleep(self.delay)
             self.battery.set_battery_level(-0.01)
             self.dirtCompartment.set_dirt_level(0.001)
             self.x += amnt * math.cos(math.radians(self.rotation + 90))

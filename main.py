@@ -9,6 +9,7 @@ from wheels import Wheels
 from zoomi import Zoomi
 from graphicalzoomi import GraphicalZoomi
 from obstacle import obstacle
+
        
 def main():
     room_one = Room(100,100,[obstacle(5,6,30,20),obstacle(25,60,30,20),obstacle(70,40,30,20)],[obstacle(80,0,15,20)])
