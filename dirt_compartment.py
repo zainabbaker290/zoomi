@@ -5,6 +5,7 @@ class DirtCompartment:
     def set_dirt_level(self,level):
         self.dirt_level += level
         if self.dirt_level > 100:
+            self.warn_user()
             self.dirt_level = 100
 
     def get_dirt_level(self):

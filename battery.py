@@ -7,8 +7,8 @@ class Battery:
     def get_battery_level(self):
         return self.battery_level
     
-    def set_battery_level(self):
-        self.battery_level = self.battery_level + 10
+    def set_battery_level(self, level):
+        self.battery_level = self.battery_level + level
         return self.battery_level
     
     def countdown(self,t):
@@ -21,8 +21,10 @@ class Battery:
     
     def charging_battery(self):
         self.countdown(1)
-        self.set_battery_level() 
+        self.set_battery_level(10) 
         print("currently charging")
         print("battery is now " + str(self.get_battery_level()))
+        if self.battery_level > 100:
+            self.battery_level = 100
         return self.get_battery_level()
 
