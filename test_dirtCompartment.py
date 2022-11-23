@@ -5,6 +5,15 @@ import dirt_compartment
 
 class TestDirtCompartment(unittest.TestCase):
 
+    #while t < 0:
+    def test_countdown_1(self):
+        t = 0
+        self.assertLessEqual(t, 0)
+
+    def test_countdown_2(self):
+        t = 5
+        self.assertGreater(t, 0)
+
     def test_set_dirt_level_1(self):
         dirt_level = 90
         self.assertNotEqual(dirt_level, 100)
