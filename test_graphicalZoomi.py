@@ -43,8 +43,6 @@ class TestGraphicalZoomi(unittest.TestCase):
         dirt_level = 85
         self.assertLess(dirt_level, 90)
 
-    #navigate home????
-
     def test_rotate_1(self):
         rotation = 400
         self.assertGreater(rotation, 360)
