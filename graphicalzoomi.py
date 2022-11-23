@@ -236,18 +236,14 @@ class GraphicalZoomi:
 
     def zoomi_movement(self):
         completionPercentage = len(self.cleanedArea)/self.room.area
-        while (completionPercentage<90): #room not clean
+        while (completionPercentage<0.90): #room not clean
             completionPercentage = len(self.cleanedArea)/self.room.area
             battery = self.battery.get_battery_level()
             dirtLevel = self.dirtCompartment.get_dirt_level()
-            print(completionPercentage)
-            if completionPercentage >0.90:
-                self.cleanedArea = []
-                return
             if battery < 20.0:
                 print("going for a mid_clean_charge")
                 self.mid_clean_charge()
-            if dirtLevel > 90.0:
+            if dirtLevel > 80.0:
                 self.dirtCompartment.warn_user()
             if dirtLevel > 99.0:
                 self.dirtCompartment.wait_for_user()
@@ -258,10 +254,8 @@ class GraphicalZoomi:
                     self.random_move(1)
             if self.collision_check() == False:
                 self.random_move(1)
-
-        print("finshed cleaning, going home")        
-        self.navigate_home()
-        
+        self.cleanedArea = []
+        return
    
     def activate_zoomi(self):
         self.initialiseTurtle()
