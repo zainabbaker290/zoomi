@@ -2,7 +2,7 @@ import time
 class Battery:
     def __init__(self):
         #all zoomis start with 50% battery 
-        self.battery_level = 50
+        self.battery_level = 22
     
     def get_battery_level(self):
         return self.battery_level
@@ -20,7 +20,7 @@ class Battery:
             t -= 1
     
     def charging_battery(self):
-        self.countdown(1)
+        self.countdown(2)
         self.set_battery_level(10) 
         print("currently charging")
         print("battery is now " + str(self.get_battery_level()))

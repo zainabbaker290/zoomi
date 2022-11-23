@@ -15,6 +15,7 @@ class Zoomi:
         self.saved_location = None
         self.base_dock = BaseDock
 
+    
     def set_zoomi_state(self,state):
         self.state = state 
         print("zoomi is now " + self.state)
@@ -24,36 +25,6 @@ class Zoomi:
             self.battery.charging_battery()
         return print("battery is fully charged at " + str(self.battery.get_battery_level()))
     
-    def zoomi_forward(self, forward_movement):
-        self.zoomi_y += forward_movement
-        self.location = self.zoomi_x,self.zoomi_y
-        self.battery.set_battery_level(-0.2)
-        self.dirt_compartment.set_dirt_level(3)
-        if self.dirt_compartment.get_dirt_level() > 90:
-            self.dirt_compartment.warn_user()
-        return self.location
-
-    def zoomi_backward(self, backward_movement):
-        self.zoomi_y -= backward_movement
-        self.location = self.zoomi_x,self.zoomi_y
-        self.battery.set_battery_level(-0.2)
-        self.dirt_compartment.set_dirt_level(3)
-        return self.location
-    
-    def zoomi_right(self, right_movement):
-        self.zoomi_x += right_movement
-        self.location = self.zoomi_x,self.zoomi_y
-        self.battery.set_battery_level(-0.2)
-        self.dirt_compartment.set_dirt_level(3)
-        return self.location
-    
-    def zoomi_left(self,left_movement):
-        self.zoomi_x -= left_movement
-        self.location = self.zoomi_x,self.zoomi_y
-        self.battery.set_battery_level(-0.2)
-        self.dirt_compartment.set_dirt_level(3)
-        return self.location
-    
     def navigate_home(self,saved_location = None):
         if self.saved_location != None:
             self.saved_location = self.location
@@ -114,17 +85,6 @@ class Zoomi:
         self.zoomi_left(self.zoomi_x)
         self.base_dock_charges()
         return self.location
-
-    def mid_clean_charge(self):
-        print("zoomi is entering a sleep state")
-        self.set_zoomi_state("sleep")
-        print(self.state)
-        print("en route to base dock")
-        self.navigate_home(self.location)
-        print("at home")
-        self.light.set_light("orange")
-        self.battery.charging_battery()
-        self.base_dock_charges()
 
     def zoomi_movement(self):
         while (self.zoomi_x < self.room.end_x) and (self.zoomi_y < self.room.end_y):

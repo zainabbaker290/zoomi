@@ -1,4 +1,4 @@
-class CleaningMode():
+class CleaningProfile():
     def __init__(self, Sensor):
         self.power = "default"
         self.speed = "default"
