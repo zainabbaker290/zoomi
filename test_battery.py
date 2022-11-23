@@ -4,7 +4,6 @@ import battery
 
 class TestBattery(unittest.TestCase):
 
-    #while t < 0:
     def test_countdown_1(self):
         t = 0
         self.assertLessEqual(t, 0)
