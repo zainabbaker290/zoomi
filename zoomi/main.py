@@ -11,11 +11,11 @@ from  roomsimulation.obstacle import obstacle
 
        
 def main():
-    room_one = Room(100,100,[obstacle(5,6,30,20),obstacle(25,60,30,20),obstacle(70,40,30,20)],[obstacle(80,0,15,20)])
+    room_one = Room(50,50,[obstacle(20,20,5,5),obstacle(10,20,5,5),obstacle(20,30,5,5),obstacle(30,40,5,5),obstacle(40,10,5,5),obstacle(10,40,5,5)],[])
     wheels = Wheels()
     sensors = Sensors(wheels)
     battery = Battery()
-    cleaning_mode = CleaningProfile("default","fast", 1, sensors)
+    cleaning_mode = CleaningProfile("default","fast", 2, sensors)
     dirt_compartment = DirtCompartment()
     light = Light()
     base_dock = BaseDock()

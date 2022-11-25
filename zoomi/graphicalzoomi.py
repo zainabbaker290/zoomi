@@ -1,4 +1,3 @@
-
 import turtle
 import tkinter as tk
 from tkinter import ttk
@@ -52,33 +51,21 @@ class GraphicalZoomi:
             obstacleDraw.goto(x,y)
             obstacleDraw.end_fill()
             turtle.penup()
-
-        for object in self.room.cliff:
-            x = object.x
-            y = object.y
-            x2 =object.x + object.width
-            y2 =object.y +object.height
-            obstacleDraw =turtle.Turtle()
-            obstacleDraw.speed(100)
-            obstacleDraw.penup()
             obstacleDraw.hideturtle()
-            obstacleDraw.goto(x,y)
-            obstacleDraw.pendown()
-            obstacleDraw.goto(x,y2)
-            obstacleDraw.goto(x2,y2)
-            obstacleDraw.goto(x2,y)
-            obstacleDraw.goto(x,y)
+        
 
     def initialiseTurtle(self):
         self.turtleDot = turtle.Turtle() 
         screen = turtle.Screen()
-        turtle.setworldcoordinates(0,0,100,100)
+        turtle.setworldcoordinates(0,0,self.room.width,self.room.height)
         self.draw_obstacles()
-        screen.tracer()
+        self.turtleDot.shape("circle")
+        self.turtleDot.shapesize(1.5,1.5,1)
         self.turtleDot.goto(0, 0) 
-        self.turtleDot.color('orange')
+        self.turtleDot.color('purple')
         self.turtleDot.speed(10) 
-        self.turtleDot.width(2) 
+        self.turtleDot.width(10) 
+        screen.tracer()
 
     
     def set_zoomi_state(self,state):
@@ -142,31 +129,62 @@ class GraphicalZoomi:
         print(self.location)
         return self.location
 
-    #needs attention
+    def horizontal_collision(self):
+        x = self.x
+        y = self.y
+        for barrier in self.room.barrier:
+            object = barrier.right
+            if object.x-1 < x < object.x+object.width+1 and object.y-1 < y < object.y+object.height+1:
+                        print("right")
+                        return True
+            object = barrier.left
+            if object.x-1 < x < object.x+object.width+1 and object.y-1 < y < object.y+object.height+1:
+                        print("left")
+                        return True
+
+    def vertical_collision(self):
+        x = self.x
+        y = self.y
+        for barrier in self.room.barrier:
+            object = barrier.top
+            if object.x-1 < x < object.x+object.width+1 and object.y-2 < y < object.y+object.height+2:
+                            print("top")
+                            return True
+            object = barrier.bottom
+            if object.x-1 < x < object.x+object.width+1 and object.y-2 < y < object.y+object.height+2:
+                            print("bottom")
+                            return True
+
     def navigate_home(self):
+        self.x = int(self.x)
+        self.y =int(self.y)
         baseX=self.base_dock.x
         baseY=self.base_dock.y
-        # while (baseX != self.x and baseY != self.y):
-        #     print("ss")
-        #     if baseX < self.x:
-        #         self.x-1
-        #     if baseX > self.x:
-        #         self.x+1
-        #     if baseY < self.y:
-        #         self.y+1
-        #     if baseY > self.y:
-        #         self.y-1
-        #     if self.collision_check():
-        #         self.rotate(random.randint(0,360))
-        #         if self.collision_check == False:
-        #             self.moveto()
-        #     if self.collision_check() == False:
-        #         self.moveto()
-        # if baseX == self.x and baseY == self.y:
-        #     return
-        self.x = baseX
-        self.y = baseY
-        self.move_to()
+        while (baseX != self.x or baseY != self.y):
+            while(self.vertical_collision()):
+                self.x-=1
+                self.move_to() 
+            while(self.horizontal_collision()):
+                self.y-=1
+                self.move_to()
+            if baseX < self.x:
+                self.x-=1
+            if baseX > self.x:
+                self.x+=1
+            if baseY < self.y:
+                self.y-=1
+            if baseY > self.y:
+                self.y+=1 
+            self.move_to()
+            while(self.vertical_collision()):
+                self.x-=1
+                self.move_to() 
+            while(self.horizontal_collision()):
+                self.y-=1
+                self.move_to()
+        if baseX == self.x and baseY == self.y:
+                return
+        
 
     def rotate(self, amount):
             self.rotation += amount
@@ -179,6 +197,7 @@ class GraphicalZoomi:
         self.turtleDot.goto(self.lastX,self.lastY)
 
     def move_to(self):
+        time.sleep(0.2)
         self.lastY = self.y
         self.lastX = self.x
         self.location = self.x,self.y
@@ -195,10 +214,12 @@ class GraphicalZoomi:
             self.lastY = self.y
             self.lastX = self.x
             self.location = self.x,self.y
-            if self.location not in self.cleanedArea:
-                self.cleanedArea.append(self.location)
+            savedLocation = int(self.x),int(self.y)
+            if savedLocation not in self.cleanedArea:
+                self.cleanedArea.append(savedLocation)
             self.turtleDot.goto(self.location)
 
+    
     def collision_check(self):
         x = self.x
         y = self.y
@@ -208,7 +229,6 @@ class GraphicalZoomi:
                         self.rotate(180)
                         self.random_move(3)
                         self.sensors.barrier_detected()
-                        print("obstacle detected")
                         return True
         for object in self.room.cliff:
             if object.x-1 < x < object.x+object.width+1 and object.y-1 < y < object.y+object.height+1:
@@ -216,10 +236,7 @@ class GraphicalZoomi:
                         self.rotate(180)
                         self.random_move(3)
                         self.sensors.cliff_detected()
-                        print("cliff detected")
                         return True
-
-
         if self.room.end_y <= self.y:
             self.y -=2
             return True
@@ -228,25 +245,25 @@ class GraphicalZoomi:
             return True
         if self.room.end_x <= self.x:
             self.x -=2
-            print("wall hit")
             return True
         if 0 >= self.x:
             self.x +=2
-            print("wall hit")
             return True
 
     def zoomi_movement(self):
         completionPercentage = len(self.cleanedArea)/self.room.area
-        while (completionPercentage<0.90): #room not clean
+        while (completionPercentage<0.90):
             completionPercentage = len(self.cleanedArea)/self.room.area
+            print(completionPercentage)
             battery = self.battery.get_battery_level()
             dirtLevel = self.dirtCompartment.get_dirt_level()
-            if battery < 20.0:
+            if battery < 10.0:
                 print("going for a mid_clean_charge")
                 self.mid_clean_charge()
             if dirtLevel > 80.0:
                 self.dirtCompartment.warn_user()
             if dirtLevel > 99.0:
+                print("my dirt compartment is full!")
                 self.dirtCompartment.wait_for_user()
             self.random_move(1)
             if self.collision_check():
@@ -255,6 +272,7 @@ class GraphicalZoomi:
                     self.random_move(1)
             if self.collision_check() == False:
                 self.random_move(1)
+        print("one lap completed!")
         self.cleanedArea = []
         return
 
