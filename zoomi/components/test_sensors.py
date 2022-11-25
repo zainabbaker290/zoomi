@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import Mock
-import components.sensors as sensors
+import sensors as sensors
 
 
 class TestSensors(unittest.TestCase):

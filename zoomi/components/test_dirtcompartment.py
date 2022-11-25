@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 from unittest.mock import Mock
-import components.dirt_compartment as dirt_compartment
+import dirt_compartment as dirt_compartment
 
 class TestDirtCompartment(unittest.TestCase):
 

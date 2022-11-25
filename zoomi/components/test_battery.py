@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import Mock
-import components.battery as battery
 
 class TestBattery(unittest.TestCase):
 

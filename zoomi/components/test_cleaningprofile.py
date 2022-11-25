@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import Mock
-import components.cleaningprofile as cleaningprofile
+import cleaningprofile as cleaningprofile
 
 
 class TestCleaning(unittest.TestCase):
