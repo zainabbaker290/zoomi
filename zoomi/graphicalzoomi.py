@@ -23,7 +23,8 @@ class GraphicalZoomi:
         self.location = self.x, self.y
         self.base_dock = BaseDock
         self.rotation = 180
-        self.initialiseTurtle()
+        self.screen = turtle.Screen()
+        self.turtleDot = turtle.Turtle() 
         if self.cleaningProfile.speed == "fast":
             self.delay = 0
         if self.cleaningProfile.speed == "slow":
@@ -33,27 +34,9 @@ class GraphicalZoomi:
 
     def draw_obstacles(self):
         for object in self.room.barrier:
-            x = object.x
-            y = object.y
-            x2 =object.x + object.width
-            y2 =object.y +object.height
-            obstacleDraw =turtle.Turtle()
-            obstacleDraw.speed(100)
-            obstacleDraw.penup()
-            obstacleDraw.hideturtle()
-            obstacleDraw.goto(x,y)
-            obstacleDraw.clear()
-            obstacleDraw.begin_fill()
-            turtle.pendown()
-            obstacleDraw.goto(x,y2)
-            obstacleDraw.goto(x2,y2)
-            obstacleDraw.goto(x2,y)
-            obstacleDraw.goto(x,y)
-            obstacleDraw.end_fill()
-            turtle.penup()
-            obstacleDraw.hideturtle()
-        
-
+            object.draw()
+            object.draw_walls()
+   
     def initialiseTurtle(self):
         self.turtleDot = turtle.Turtle() 
         screen = turtle.Screen()
@@ -254,7 +237,6 @@ class GraphicalZoomi:
         completionPercentage = len(self.cleanedArea)/self.room.area
         while (completionPercentage<0.90):
             completionPercentage = len(self.cleanedArea)/self.room.area
-            print(completionPercentage)
             battery = self.battery.get_battery_level()
             dirtLevel = self.dirtCompartment.get_dirt_level()
             if battery < 10.0:

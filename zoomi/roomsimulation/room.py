@@ -9,7 +9,6 @@ class Room:
         self.barrier = barrier #list
         self.cliff = cliff #list
         self.area = end_x * end_y
-        
         for object in self.barrier:
             self.area =  self.area - object.area
         for object in self.cliff:   
