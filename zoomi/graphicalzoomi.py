@@ -85,6 +85,7 @@ class GraphicalZoomi:
         lastmsg = {}
         self.start = False
         self.request_default_profile()
+        print("Zoomi Online!")
         while True:
             message = {"purpose": "update", "status": self.state, "battery": round(
                 self.battery.get_battery_level()), "capacity": round(self.dirtCompartment.get_dirt_level())}

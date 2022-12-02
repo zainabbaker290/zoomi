@@ -44,7 +44,11 @@ class HomePage(MasterPage):
         self.endCycleMenu = AlertDialog(
             modal=True,
             title=Text("End Cleaning Cycle Early?"),
-            content=Column(controls=[Text(value="Are you sure you would like to quit the cycle early? You will not be able to resume the cycle after it is cancelled!")],alignment="center",width=100, height=100),
+            content=Column(controls=[Text(
+                value="Are you sure you would like to quit the cycle early? You will not be able to resume the cycle after it is cancelled!")], 
+                alignment="center",
+                width=100, 
+                height=100),
             actions=[
                 TextButton("Quit Cycle", on_click=self.quit_cycle),
                 TextButton("Cancel", on_click=self.close_dlg)
@@ -95,12 +99,12 @@ class HomePage(MasterPage):
 
     def did_mount(self):
         self.running = True
-        self.th = threading.Thread(
+        self.page.th = threading.Thread(
             target=self.connect_to_server, args=(), daemon=True)
-        self.th.start()
-    
+        self.page.th.start()
+
     def will_unmount(self):
-        self.running = True
+        self.running = False
 
     def refresh_display(self):
         self._build()
@@ -119,12 +123,11 @@ class HomePage(MasterPage):
         username = my_username.encode("utf-8")
         username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
         self.client_socket.send(username_header + username)
-        while True:
+        while self.running == True:
             if time.time() - self.timeOfLastPing > 10:
                 self.declare_connection_lost()
             elif time.time() - self.timeOfLastPing > 5:
                 self.declare_weak_connection()
-            
             message = False
             if message:
                 message = pickle.dumps(message)
@@ -133,7 +136,7 @@ class HomePage(MasterPage):
                 self.client_socket.send(message_header + message)
             try:
                 while True:
-                    
+
                     username_header = self.client_socket.recv(HEADER_LENGTH)
                     if not len(username_header):
                         print("connection closed by the server")
@@ -142,12 +145,12 @@ class HomePage(MasterPage):
                     username_length = int(username_header.decode("utf-8"))
                     username = self.client_socket.recv(
                         username_length).decode("utf-8")
-            
+
                     message_header = self.client_socket.recv(HEADER_LENGTH)
                     message_length = int(message_header.decode("utf-8"))
                     message = pickle.loads(
                         self.client_socket.recv(message_length))
-                    if username!="flet app":
+                    if username != "flet app":
                         self.timeOfLastPing = time.time()
                         self.parse_message(message)
                         print(f"{username} > {message}")
@@ -157,45 +160,41 @@ class HomePage(MasterPage):
                     print("reading error", str(e))
                     sys.exit()
                 continue
-            # except Exception as e:
-            #     print("General error", str(e))
-            #     sys.exit
+            except Exception as e:
+                print("General error", str(e))
+                sys.exit
 
     def declare_connection_lost(self):
         self.zoomiState = ""
         self.zoomiBagPercentage = 1000
         self.zoomiBatteryPercentage = 1000
         self.display_zoomi_stats()
-        self._build()
-        self.update()
-        self.page.update()
+        self.refresh_display()
 
     def declare_weak_connection(self):
         self.zoomiState = "weak"
         self.display_zoomi_stats()
-        self._build()
-        self.update()
-        self.page.update()
-        
+        self.refresh_display()
+
     def determine_button(self):
         if self.zoomiState == "":
             return ElevatedButton(
-                    "Start Cycle", on_click=self.open_start_cycle_menu,disabled=True, tooltip="Zoomi is offline. Connect him to start cleaning!")
+                "Start Cycle", on_click=self.open_start_cycle_menu, disabled=True, tooltip="Zoomi is offline. Connect him to start cleaning!")
         elif self.zoomiState == "ending" or self.zoomiState == "endingEarly":
             return ElevatedButton(
-                    "End Cycle", on_click=self.open_end_cycle_menu, disabled=True, tooltip="Zoomi is already finishing cleaning")
+                "End Cycle", on_click=self.open_end_cycle_menu, disabled=True, tooltip="Zoomi is already finishing cleaning")
         elif self.zoomiState == "preparing" or self.zoomiState == "requestedClean":
             return ElevatedButton(
-                    "Cancel", on_click=self.cancel_cycle)
+                "Cancel", on_click=self.cancel_cycle)
         elif self.zoomiState == "bagFull":
             return ElevatedButton(
-                    "End Cycle", on_click=self.open_end_cycle_menu, disabled=True, tooltip="Please empty Zoomi's bag first")
+                "End Cycle", on_click=self.open_end_cycle_menu, disabled=True, tooltip="Please empty Zoomi's bag first")
         elif self.zoomiState == "deactivated":
-             return ElevatedButton(
-                    "Start Cycle", on_click=self.open_start_cycle_menu)
+            return ElevatedButton(
+                "Start Cycle", on_click=self.open_start_cycle_menu)
         else:
             return ElevatedButton(
-                    "End Cycle", on_click=self.open_end_cycle_menu)
+                "End Cycle", on_click=self.open_end_cycle_menu)
 
     def display_zoomi_stats(self):
         if self.zoomiBagPercentage > 100:
@@ -212,45 +211,44 @@ class HomePage(MasterPage):
         elif self.zoomiState == "weak":
             self.StateDisplay = "Waiting for Update..."
         elif self.zoomiState == "":
-             self.StateDisplay = "Offline"
+            self.StateDisplay = "Attempting to Connect..."
         elif self.zoomiState == "endingEarly":
             self.StateDisplay = "Ending Clean Early..."
         elif self.zoomiState == "ending":
-             self.StateDisplay = "Finishing Clean..."
+            self.StateDisplay = "Finishing Clean..."
         elif self.zoomiState == "preparing":
-             self.StateDisplay = "Starting Clean..."
+            self.StateDisplay = "Starting Clean..."
         elif self.zoomiState == "deactivated":
-             self.StateDisplay = "Ready to Clean!"
+            self.StateDisplay = "Ready to Clean!"
         elif self.zoomiState == "active":
-             self.StateDisplay = "Cleaning!"
+            self.StateDisplay = "Cleaning!"
         elif self.zoomiState == "bagFull":
-             self.StateDisplay = "Dirt Compartment is Full!"
+            self.StateDisplay = "Dirt Compartment is Full!"
         elif self.zoomiState == "batteryEmpty":
-             self.StateDisplay = "Charging..."
+            self.StateDisplay = "Charging..."
         elif self.zoomiState == "cancelled":
-             self.StateDisplay = "Cancelling..."
+            self.StateDisplay = "Cancelling..."
         else:
             self.StateDisplay = self.zoomiState
 
-
-    def parse_message(self,message):
+    def parse_message(self, message):
         if message["purpose"] == 'update':
-            status = message["status"] 
+            status = message["status"]
             battery = message["battery"]
             capacity = message["capacity"]
             change = False
             if status == "active":
-                self.alerted =False
+                self.alerted = False
             if status == "bagFull":
                 if self.alerted == False:
                     self.page.snack_bar = SnackBar(
-                    Text("Zoomis Bag is Full! Please Empty it for Zoomi to continue cleaning."))
+                        Text("Zoomis Bag is Full! Please Empty it for Zoomi to continue cleaning."))
                     self.page.snack_bar.open = True
                     self.alerted = True
             if status == "batteryEmpty":
                 if self.alerted == False:
                     self.page.snack_bar = SnackBar(
-                    Text("Zoomis Battery is empty! Zoomi will recharge before he will continue cleaning."))
+                        Text("Zoomis Battery is empty! Zoomi will recharge before he will continue cleaning."))
                     self.page.snack_bar.open = True
                     self.alerted = True
             if self.zoomiBatteryPercentage != battery:
@@ -279,11 +277,11 @@ class HomePage(MasterPage):
         elif message["purpose"] == "finished":
             self.page.snack_bar.open = False
             self.page.snack_bar = SnackBar(
-            Text("Zoomi is finished Cleaning!"))
+                Text("Zoomi is finished Cleaning!"))
             self.page.snack_bar.open = True
             self.refresh_display()
 
-    def send_message(self,message):
+    def send_message(self, message):
         message = pickle.dumps(message)
         message_header = f"{len(message) :< {HEADER_LENGTH}}".encode(
             "utf-8")
@@ -367,7 +365,7 @@ class HomePage(MasterPage):
         self.page.snack_bar.open = True
         self.ask_to_end()
         self.refresh_display()
-        
+
     def quit_cycle(self, e):
         self.page.snack_bar = SnackBar(
             Text("Your Cleaning Cycle Has Been Quit"))
@@ -419,10 +417,9 @@ class HomePage(MasterPage):
 
     def ask_to_end(self):
         message = {"command": "stop", "default": "",
-                    "mode": "", "speed": "", "laps": ""}
+                   "mode": "", "speed": "", "laps": ""}
         message = pickle.dumps(message)
         if message:
             message_header = f"{len(message) :< {HEADER_LENGTH}}".encode(
                 "utf-8")
             self.client_socket.send(message_header + message)
-       
