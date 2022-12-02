@@ -16,12 +16,12 @@ def main():
     sensors = Sensors(wheels)
     battery = Battery()
     cleaning_mode = CleaningProfile("default","fast", 2, sensors)
+    default_cleaning_mode = CleaningProfile("default","fast", 2, sensors)
     dirt_compartment = DirtCompartment()
     light = Light()
     base_dock = BaseDock()
-    print(cleaning_mode)
-    zoomi = GraphicalZoomi(battery,sensors,light,dirt_compartment,cleaning_mode, wheels,room_one, base_dock)
-    print(zoomi.activate_zoomi())
+    zoomi = GraphicalZoomi(battery,sensors,light,dirt_compartment,default_cleaning_mode, cleaning_mode, wheels,room_one, base_dock)
+    zoomi.connect_to_server()
     
 
 if __name__ == "__main__":

@@ -1,32 +1,32 @@
 class CleaningProfile():
-    def __init__(self,power,speed,laps, Sensor):
-        self.power = power
+    def __init__(self,mode,speed,laps, Sensor):
+        self.mode = mode
         self.speed = speed
         self.laps = laps
         self.sensor= Sensor
         self.floor = self.sensor.get_floor_type()
-
+    
     def floor_detection(self, floor):
         self.floor = self.sensor.set_floor_type(floor)
     
     def get_floor(self):
         return self.floor
 
-    def set_power(self,power):
-        if power == "green":
-            self.power = "low"
-        elif power == "turbo":
-            self.power = "max"
+    def set_mode(self,mode):
+        if mode == "Green":
+            self.mode = "low"
+        elif mode == "Turbo":
+            self.mode = "max"
         else:
-            self.power = "default"
+            self.mode = "Default"
     
-    def get_power(self):
-        return self.power
+    def get_mode(self):
+        return self.mode
     
     def set_speed(self,speed):
-        if speed == "quick clean":
+        if speed == "Quick Clean":
             self.speed= "fast"
-        elif speed == "deep clean":
+        elif speed == "Deep Clean":
             self.speed = "slow"
         else:
             self.speed = "default"
@@ -35,10 +35,15 @@ class CleaningProfile():
         return self.speed
 
     def set_laps(self,laps):
-        self.laps = laps 
-    
+        if laps == "One Lap":
+            self.laps = 1
+        if laps == "Two Laps":
+            self.laps = 2
+        if laps == "Three Laps":
+            self.laps = 3 
+
     def get_laps(self):
         return self.laps
     
     def __str__(self):
-        return 'The power of the zoomi is currently on ' + self.get_power() + " and the speed is currently at " + self.get_speed() + ". " + " It is currently sensing a " + self.get_floor() + " floor type and will do " + str(self.get_laps()) + " laps"
+        return 'The mode of the zoomi is currently on ' + self.get_mode() + " and the speed is currently at " + self.get_speed() + ". " + " It is currently sensing a " + self.get_floor() + " floor type and will do " + str(self.get_laps())

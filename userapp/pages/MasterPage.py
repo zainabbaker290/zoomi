@@ -18,6 +18,10 @@ class MasterPage(UserControl):
         self.page.dialog.open = False
         self.page.update()
 
+    def close_dlg_noe(self):
+        self.page.dialog.open = False
+        self.page.update()
+
     def open_dlg(self,dlg):
         self.page.dialog = dlg
         dlg.open = True
