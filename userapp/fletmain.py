@@ -6,7 +6,7 @@ from pages.ScheduleCreationPage import ScheduleCreationPage
 from pages.SchedulesPage import SchedulesPage
 from theme import *
 from widgets import *
-
+import threading
 import flet
 from flet import FloatingActionButton, Page, Text, View, icons, theme
 
@@ -27,7 +27,6 @@ def fletmain(page: Page):
 
     navBar.on_change = navbar_change
 
-    
 
     def route_change(e):
         page.views.clear()
@@ -105,7 +104,7 @@ def fletmain(page: Page):
             )
 
         page.update()
-
+    
     def view_pop(e):
         clear_profile_values()
         clear_schedule_values()

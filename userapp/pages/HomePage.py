@@ -98,9 +98,9 @@ class HomePage(MasterPage):
         self.th = threading.Thread(
             target=self.connect_to_server, args=(), daemon=True)
         self.th.start()
-
+    
     def will_unmount(self):
-        return
+        self.running = True
 
     def refresh_display(self):
         self._build()
