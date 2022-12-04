@@ -6,7 +6,6 @@ from database import *
 from theme import *
 from widgets import *
 import socket
-import select
 import errno
 import sys
 import time
@@ -20,10 +19,15 @@ class HomePage(MasterPage):
     def __init__(self, page):
         self.page = page
         super().__init__()
+        self.currentModeDisplay =""
+        self.currentLapsDisplay = ""
+        self.currentSpeedDisplay = ""
         self.zoomiBagPercentage = 1000
         self.zoomiState = ""
         self.StateDisplay = "Offline"
         self.zoomiBatteryPercentage = 1000
+        self.zoomiCurrentLap = 0
+        self.zoomiCurrentCompletionPercentage = 0
         self.BatteryPercentageDisplay = ""
         self.BagPercentageDisplay = ""
         self.zoomiFlipped = False
@@ -45,9 +49,9 @@ class HomePage(MasterPage):
             modal=True,
             title=Text("End Cleaning Cycle Early?"),
             content=Column(controls=[Text(
-                value="Are you sure you would like to quit the cycle early? You will not be able to resume the cycle after it is cancelled!")], 
+                value="You will not be able to resume the cycle after it is cancelled!")],
                 alignment="center",
-                width=100, 
+                width=100,
                 height=100),
             actions=[
                 TextButton("Quit Cycle", on_click=self.quit_cycle),
@@ -55,9 +59,10 @@ class HomePage(MasterPage):
             ]
         )
         self.display_zoomi_stats()
+        currentCleanInformationDisplay = self.display_current_clean_info()
         batteryIcon = self.determineBatteryIcon()
-        capacityIcon = self.determineCapacityIcon()
-        statusIcon = self.determineStatusIcon()
+        capacityIcon = self.determine_capacity_icon()
+        statusIcon = self.determine_status_icon()
         startOrEndButton = self.determine_button()
         return Column(
             controls=[
@@ -71,8 +76,12 @@ class HomePage(MasterPage):
                         Image(src=f"roomba.png", width=200, height=200),
                         Row(controls=[
                             Text(value=self.StateDisplay,
-                                 style="titleMedium"),
+                                 style="titleLarge"),
                             statusIcon
+                        ], alignment="center"
+                        ),
+                        Row(controls=[
+                            currentCleanInformationDisplay
                         ], alignment="center"
                         ),
                         Row(
@@ -153,7 +162,6 @@ class HomePage(MasterPage):
                     if username != "flet app":
                         self.timeOfLastPing = time.time()
                         self.parse_message(message)
-                        print(f"{username} > {message}")
 
             except IOError as e:
                 if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
@@ -161,7 +169,6 @@ class HomePage(MasterPage):
                     sys.exit()
                 continue
             except Exception as e:
-                print("General error", str(e))
                 sys.exit
 
     def declare_connection_lost(self):
@@ -186,6 +193,9 @@ class HomePage(MasterPage):
         elif self.zoomiState == "preparing" or self.zoomiState == "requestedClean":
             return ElevatedButton(
                 "Cancel", on_click=self.cancel_cycle)
+        elif self.zoomiState == "cancelled":
+            return ElevatedButton(
+                "Cancelled", on_click=self.cancel_cycle, disabled=True)
         elif self.zoomiState == "bagFull":
             return ElevatedButton(
                 "End Cycle", on_click=self.open_end_cycle_menu, disabled=True, tooltip="Please empty Zoomi's bag first")
@@ -210,6 +220,8 @@ class HomePage(MasterPage):
             self.StateDisplay = "Requesting Clean..."
         elif self.zoomiState == "weak":
             self.StateDisplay = "Waiting for Update..."
+        elif self.zoomiState == "quitting":
+            self.StateDisplay = "Quitting..."
         elif self.zoomiState == "":
             self.StateDisplay = "Attempting to Connect..."
         elif self.zoomiState == "endingEarly":
@@ -236,6 +248,11 @@ class HomePage(MasterPage):
             status = message["status"]
             battery = message["battery"]
             capacity = message["capacity"]
+            completion = message["completion"]
+            lap = message["lap"]
+            self.currentModeDisplay = message["mode"]
+            self.currentSpeedDisplay = message["speed"]
+            self.currentLapsDisplay = message["laps"]
             change = False
             if status == "active":
                 self.alerted = False
@@ -254,25 +271,28 @@ class HomePage(MasterPage):
             if self.zoomiBatteryPercentage != battery:
                 change = True
                 self.zoomiBatteryPercentage = battery
+            if self.zoomiBatteryPercentage != battery:
+                change = True
+                self.zoomiBatteryPercentage = battery
             if self.zoomiState != status:
                 change = True
                 self.zoomiState = status
             if self.zoomiBagPercentage != capacity:
                 self.zoomiBagPercentage = capacity
                 change = True
+            if self.zoomiCurrentCompletionPercentage != completion:
+                self.zoomiCurrentCompletionPercentage = completion
+                change = True
+            if self.zoomiCurrentLap != lap:
+                self.zoomiCurrentLap = lap
+                change = True
             if change == True:
                 self._build()
                 self.update()
                 self.page.update()
-
+            
         elif message['purpose'] == 'requestdefault':
-            default = fetch_default_profile_from_DB()
-            mode = default["Mode"]
-            speed = default["Speed"]
-            laps = default["Laps"]
-            message = {"command": "storedefault",
-                       "mode": mode, "speed": speed, "laps": laps}
-            self.send_message(message)
+            self.send_default_profile()
 
         elif message["purpose"] == "finished":
             self.page.snack_bar.open = False
@@ -280,23 +300,23 @@ class HomePage(MasterPage):
                 Text("Zoomi is finished Cleaning!"))
             self.page.snack_bar.open = True
             self.refresh_display()
+        else:
+            return
+
+    def send_default_profile(self):
+        default = fetch_default_profile_from_DB()
+        mode = default["Mode"]
+        speed = default["Speed"]
+        laps = default["Laps"]
+        message = {"command": "storedefault",
+                    "mode": mode, "speed": speed, "laps": laps}
+        self.send_message(message)
 
     def send_message(self, message):
         message = pickle.dumps(message)
         message_header = f"{len(message) :< {HEADER_LENGTH}}".encode(
             "utf-8")
         self.client_socket.send(message_header + message)
-
-    def startCycleMenu(self):
-        return AlertDialog(
-            modal=True,
-            title=Text("Start Cleaning Cycle?"),
-            content=[],
-            actions=[
-                TextButton("Begin", on_click=self.start_cycle),
-                TextButton("Cancel", on_click=self.close_dlg)
-            ]
-        )
 
     def check_for_custom(self, e):
         if profileSelection_dropdown.value == "Custom":
@@ -319,18 +339,61 @@ class HomePage(MasterPage):
     def determineBatteryIcon(self):
         if self.zoomiState == "batteryEmpty":
             return Icon(name=icons.BATTERY_FULL, color=colors.PURPLE, rotate=pi/2)
+        if self.zoomiState == "":
+            return Icon(name=icons.BATTERY_UNKNOWN)
+        elif self.zoomiBatteryPercentage == 100:
+            return Icon(name=icons.BATTERY_FULL, color=colors.GREEN, rotate=pi/2)
+        elif self.zoomiBatteryPercentage > 90:
+            return Icon(name=icons.BATTERY_6_BAR_ROUNDED, color=colors.GREEN, rotate=pi/2)
+        elif self.zoomiBatteryPercentage > 80:
+            return Icon(name=icons.BATTERY_5_BAR_ROUNDED, color=colors.GREEN, rotate=pi/2)
+        elif self.zoomiBatteryPercentage > 60:
+            return Icon(name=icons.BATTERY_4_BAR_ROUNDED, color=colors.GREEN, rotate=pi/2)
+        elif self.zoomiBatteryPercentage > 40:
+            return Icon(name=icons.BATTERY_3_BAR_ROUNDED, color=colors.ORANGE, rotate=pi/2)
+        elif self.zoomiBatteryPercentage > 20:
+            return Icon(name=icons.BATTERY_2_BAR_ROUNDED, color=colors.ORANGE, rotate=pi/2)
+        elif self.zoomiBatteryPercentage > 1:
+            return Icon(name=icons.BATTERY_1_BAR_ROUNDED, color=colors.RED, rotate=pi/2)
         elif self.zoomiBatteryPercentage == 100:
             return Icon(name=icons.BATTERY_FULL, color=colors.GREEN, rotate=pi/2)
         else:
             return Icon(name=icons.BATTERY_UNKNOWN)
 
-    def determineCapacityIcon(self):
-        if self.zoomiBagPercentage < 100:
+    def display_current_clean_info(self):
+        if self.currentLapsDisplay == "Two Laps":
+            totalLaps = 2
+        elif self.currentLapsDisplay == "Three Laps":
+            totalLaps = 3
+        else:
+            totalLaps = 1
+
+        completionDisplay = int((self.zoomiCurrentCompletionPercentage + int(self.zoomiCurrentCompletionPercentage/9))/totalLaps)
+        display = Column(
+            controls=[
+                Row(controls=[
+                    Text(value=f"{completionDisplay}% Complete", style="titleMedium"), 
+                    Text(value=f"Lap {self.zoomiCurrentLap}/{totalLaps}",style="titleMedium")
+                    ]
+                ),
+                Row(controls = [Text(f"Mode: {self.currentModeDisplay}   Speed: {self.currentSpeedDisplay}   Laps: {self.currentLapsDisplay}",style = "labelLarge")]),
+            ], horizontal_alignment="center"
+        )
+        if self.zoomiState == "active" or self.zoomiState == "bagFull" or self.zoomiState == "batteryEmpty":
+            display.visible = True
+        else:
+            display.visible = False
+        return display
+
+    def determine_capacity_icon(self):
+        if self.zoomiBagPercentage < 80:
             return Icon(name=icons.CHECK, color=colors.GREEN)
+        elif self.zoomiBagPercentage > 80:
+            return Icon(name = icons.WARNING_ROUNDED, color =colors.RED)
         else:
             return Icon(name=icons.WARNING, color=colors.RED)
 
-    def determineStatusIcon(self):
+    def determine_status_icon(self):
         if self.zoomiState == "active":
             return Icon(name=icons.CIRCLE, color=colors.GREEN)
         elif self.zoomiState == "deactivated":
@@ -363,7 +426,7 @@ class HomePage(MasterPage):
             Text("Your cycle will be cancelled"))
         self.zoomiState = "cancelled"
         self.page.snack_bar.open = True
-        self.ask_to_end()
+        self.ask_to_cancel()
         self.refresh_display()
 
     def quit_cycle(self, e):
@@ -374,52 +437,53 @@ class HomePage(MasterPage):
         self.ask_to_end()
         self.refresh_display()
 
+    def request_default_clean(self):
+        message = {"command": "start", "default": True,
+                       "mode": "", "speed": "", "laps": ""}
+        self.send_message(message)
+    
+    def request_custom_clean(self):
+        mode = mode_dropdown.value
+        laps = laps_dropdown.value
+        speed = speed_dropdown.value
+        message = {"command": "start", "default": False,
+                    "mode": mode, "speed": speed, "laps": laps}
+        self.send_message(message)
+
+    def request_profile_clean(self):
+        selectedProfile = profileSelection_dropdown.value
+        profiles = fetch_profiles_from_DB()
+        for object in profiles:
+            if profiles[object]["Name"] == selectedProfile:
+                mode = profiles[object]["Mode"]
+                speed = profiles[object]["Speed"]
+                laps = profiles[object]["Laps"]
+        message = {"command": "start", "default": False,
+                    "mode": mode, "speed": speed, "laps": laps}
+        self.send_message(message)
+
     def ask_to_start(self):
         if profileSelection_dropdown.value == "Default":
-            message = {"command": "start", "default": True,
-                       "mode": "", "speed": "", "laps": ""}
-            message = pickle.dumps(message)
-            if message:
-                message_header = f"{len(message) :< {HEADER_LENGTH}}".encode(
-                    "utf-8")
-                self.client_socket.send(message_header + message)
+           self.request_default_clean()
         elif profileSelection_dropdown.value == "Custom":
-            mode = mode_dropdown.value
-            laps = laps_dropdown.value
-            speed = speed_dropdown.value
-            message = {"command": "start", "default": False,
-                       "mode": mode, "speed": speed, "laps": laps}
-            message = pickle.dumps(message)
-            if message:
-                message_header = f"{len(message) :< {HEADER_LENGTH}}".encode(
-                    "utf-8")
-                self.client_socket.send(message_header + message)
+            self.request_custom_clean()
         else:
-            selectedProfile = profileSelection_dropdown.value
-
-            profiles = fetch_profiles_from_DB()
-            for object in profiles:
-                print(selectedProfile)
-                print(object)
-                if profiles[object]["Name"] == selectedProfile:
-                    mode = profiles[object]["Mode"]
-                    speed = profiles[object]["Speed"]
-                    laps = profiles[object]["Laps"]
-            message = {"command": "start", "default": False,
-                       "mode": mode, "speed": speed, "laps": laps}
-            message = pickle.dumps(message)
-            if message:
-                message_header = f"{len(message) :< {HEADER_LENGTH}}".encode(
-                    "utf-8")
-                self.client_socket.send(message_header + message)
+            self.request_profile_clean()
         self.zoomiState = "requestedClean"
         self.refresh_display()
 
     def ask_to_end(self):
+        self.zoomiCurrentCompletionPercentage = 0
+        self.zoomiCurrentLap = 0
+        self.zoomiState = "quitting"
+        self.refresh_display()
         message = {"command": "stop", "default": "",
                    "mode": "", "speed": "", "laps": ""}
-        message = pickle.dumps(message)
-        if message:
-            message_header = f"{len(message) :< {HEADER_LENGTH}}".encode(
-                "utf-8")
-            self.client_socket.send(message_header + message)
+        self.send_message(message)
+
+    def ask_to_cancel(self):
+        self.zoomiCurrentCompletionPercentage = 0
+        self.zoomiCurrentLap = 0
+        message = {"command": "cancel", "default": "",
+                   "mode": "", "speed": "", "laps": ""}
+        self.send_message(message)

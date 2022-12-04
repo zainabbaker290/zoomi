@@ -7,7 +7,7 @@ class Battery:
     def get_battery_level(self):
         return self.battery_level
     
-    def set_battery_level(self, level):
+    def update(self, level):
         self.battery_level = self.battery_level + level
         return self.battery_level
     
