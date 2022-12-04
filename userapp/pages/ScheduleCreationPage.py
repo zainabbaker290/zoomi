@@ -26,6 +26,7 @@ class ScheduleCreationPage(MasterPage):
         super().__init__()
     
     def build(self):
+        update_profile_selection_dropdown()
         profileSelection_dropdown.on_change = self.check_for_custom
         d = Column(controls=[
             Row(controls=[scheduleNameInput]),

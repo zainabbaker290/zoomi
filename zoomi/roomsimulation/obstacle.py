@@ -34,6 +34,22 @@ class obstacle(object):
         turtle.penup()
         obstacleDraw.hideturtle()
 
+    def draw_hollow(self):
+        obstacleDraw = turtle.Turtle()
+        x = self.x
+        y = self.y
+        x2 =self.x + self.width
+        y2 =self.y +self.height
+        obstacleDraw.speed(100)
+        obstacleDraw.penup()
+        obstacleDraw.hideturtle()
+        obstacleDraw.goto(x,y)
+        obstacleDraw.pendown()
+        obstacleDraw.goto(x,y2)
+        obstacleDraw.goto(x2,y2)
+        obstacleDraw.goto(x2,y)
+        obstacleDraw.goto(x,y)
+
     def draw_walls(self):
         obstacleDraw = turtle.Turtle()
         obstacleDraw.color("red")
