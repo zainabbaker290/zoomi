@@ -184,7 +184,7 @@ class HomePage(MasterPage):
         self.refresh_display()
 
     def determine_button(self):
-        if self.zoomiState == "":
+        if self.zoomiState == "" or self.zoomiState == "weak":
             return ElevatedButton(
                 "Start Cycle", on_click=self.open_start_cycle_menu, disabled=True, tooltip="Zoomi is offline. Connect him to start cleaning!")
         elif self.zoomiState == "ending" or self.zoomiState == "endingEarly":
@@ -223,7 +223,7 @@ class HomePage(MasterPage):
         elif self.zoomiState == "quitting":
             self.StateDisplay = "Quitting..."
         elif self.zoomiState == "":
-            self.StateDisplay = "Attempting to Connect..."
+            self.StateDisplay = "Offline"
         elif self.zoomiState == "endingEarly":
             self.StateDisplay = "Ending Clean Early..."
         elif self.zoomiState == "ending":

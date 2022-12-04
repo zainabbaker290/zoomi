@@ -11,13 +11,11 @@ import threading
 
 
 class GraphicalZoomi:
-    def __init__(self, Battery, Sensors, DirtCompartment, defaultCleaningProfile, Wheels, Room, BaseDock) -> None:
+    def __init__(self, Battery, DirtCompartment, defaultCleaningProfile, Room, BaseDock) -> None:
         self.battery = Battery
-        self.sensors = Sensors
         self.base_dock = BaseDock
         self.dirtCompartment = DirtCompartment
         self.defaultCleaningProfile = defaultCleaningProfile
-        self.wheels = Wheels
         self.currentMode = ""
         self.currentSpeed = ""
         self.currentLaps = ""
@@ -364,14 +362,12 @@ class GraphicalZoomi:
                 self.backup()
                 self.rotate(180)
                 self.random_move(3)
-                self.sensors.barrier_detected()
                 return True
         for object in self.room.cliff:
             if object.x-1 < x < object.x+object.width+1 and object.y-1 < y < object.y+object.height+1:
                 self.backup()
                 self.rotate(180)
                 self.random_move(3)
-                self.sensors.cliff_detected()
                 return True
         if self.room.end_y <= self.y:
             self.y -= 2
