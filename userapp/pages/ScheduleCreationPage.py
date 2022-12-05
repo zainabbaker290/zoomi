@@ -9,7 +9,6 @@ from flet import (AlertDialog, Column, ElevatedButton,
 
 class ScheduleCreationPage(MasterPage):
     def __init__(self, page):
-        self.dead = False
         self.page = page
         self.createScheduleConfirmation = AlertDialog(
             modal=True,

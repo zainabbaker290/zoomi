@@ -23,6 +23,7 @@ class SchedulesPage(MasterPage):
         )
 
     def build(self):
+        update_profile_selection_dropdown()
         profileSelection_dropdown.on_change = self.check_for_custom
         parsedSchedules = fetch_schedules_from_DB()
         schedulesDisplay = self.display_schedules(parsedSchedules)
