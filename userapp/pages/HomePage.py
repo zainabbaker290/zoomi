@@ -35,7 +35,6 @@ class HomePage(MasterPage):
         self.alerted = False
 
     def build(self):
-        profileSelection_dropdown.on_change = self.check_for_custom
         self.startCycleMenu = AlertDialog(
             modal=True,
             title=Text("Start Cleaning Cycle?"),
@@ -44,6 +43,7 @@ class HomePage(MasterPage):
                 TextButton("Begin", on_click=self.start_cycle),
                 TextButton("Cancel", on_click=self.close_dlg)
             ]
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!CELAR INPUTS
         )
         self.endCycleMenu = AlertDialog(
             modal=True,
@@ -318,7 +318,7 @@ class HomePage(MasterPage):
             "utf-8")
         self.client_socket.send(message_header + message)
 
-    def check_for_custom(self, e):
+    def check_for_custom_start(self, e):
         if profileSelection_dropdown.value == "Custom":
             self.startCycleMenu.content = withCustomStartMenu
             self.page.update()
@@ -328,6 +328,7 @@ class HomePage(MasterPage):
 
     def open_start_cycle_menu(self, e):
         update_profile_selection_dropdown()
+        profileSelection_dropdown.on_change = self.check_for_custom_start
         profileSelection_dropdown.value = "Default"
         self.startCycleMenu.content = noCustomStartMenu
         profileSelection_dropdown.data = "start"

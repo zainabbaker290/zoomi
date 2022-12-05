@@ -71,11 +71,7 @@ class MasterPage(UserControl):
             self.update()
             self.page.update()
             return False
-        print(existingObjects)
         for profileIndex in existingObjects:
-            print(existingObjects[profileIndex]["Name"])
-            print("index", profileIndex)
-            print("editor index", input)
             if existingObjects[profileIndex]["Name"] == input.value and profileIndex != index:
                 input.error_text = "This name has already been used."
                 self.update()
