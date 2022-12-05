@@ -6,15 +6,16 @@ from pages.ScheduleCreationPage import ScheduleCreationPage
 from pages.SchedulesPage import SchedulesPage
 from theme import *
 from widgets import *
-
+import threading
 import flet
 from flet import FloatingActionButton, Page, Text, View, icons, theme
 
 
 def fletmain(page: Page):
-    page.window_resizable=False
-    page.window_width= 500
-    page.window_height = 780 
+    page.session.set
+    page.window_resizable = False
+    page.window_width = 500
+    page.window_height = 780
 
     def navbar_change(e):
         if navBar.selected_index == 0:
@@ -25,78 +26,79 @@ def fletmain(page: Page):
             open_schedules(e)
 
     navBar.on_change = navbar_change
-    
+
     def route_change(e):
         page.views.clear()
-        page.theme_mode="light"
-        page.theme=theme.Theme(color_scheme_seed="#006781",use_material3=True)
-        appBar.title=(Text("Home"))
-        homePage=HomePage(page)
+        page.theme_mode = "light"
+        page.theme = theme.Theme(
+            color_scheme_seed="#006781", use_material3=True)
+        appBar.title = (Text("Home"))
+        homePage = HomePage(page)
         page.views.append(
             View(
                 "/",
-                    [appBar,homePage,navBar]
-                )
+                [appBar, homePage, navBar]
             )
-        navBar.selected_index=1
+        )
+        navBar.selected_index = 1
 
         if page.route == "/schedules" or page.route == "/schedules/createschedule":
-            appBar.title=Text(value="Scheduled Cleans")
+            appBar.title = Text(value="Scheduled Cleans")
             schedulesDisplay = SchedulesPage(page)
             page.views.append(
                 View(
                     "/schedules",
-                    
+
                     [appBar,
-                    schedulesDisplay,
-                    FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createschedule),
-                    navBar],
+                     schedulesDisplay,
+                     FloatingActionButton(
+                         icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createschedule),
+                     navBar],
                     scroll="auto"
                 )
             )
-            navBar.selected_index=2
+            navBar.selected_index = 2
 
         if page.route == "/profiles" or page.route == "/profiles/createprofile":
-            appBar.title=Text(value="Cleaning Profiles")
+            appBar.title = Text(value="Cleaning Profiles")
             profilesDisplay = ProfilesPage(page)
             page.views.append(
                 View(
                     "/profiles",
-                    
+
                     [appBar,
-                    profilesDisplay,
-                    FloatingActionButton(icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createprofile),
-                    navBar],
+                     profilesDisplay,
+                     FloatingActionButton(
+                         icon=icons.ADD_CIRCLE_OUTLINED, on_click=open_createprofile),
+                     navBar],
 
                     scroll="auto"
                 )
 
             )
-            navBar.selected_index=0
-
-        
+            navBar.selected_index = 0
 
         if page.route == "/schedules/createschedule":
-            appBar.title=Text(value="Create a Scheduled Clean")
+            appBar.title = Text(value="Create a Scheduled Clean")
             createSchedulePage = ScheduleCreationPage(page)
             page.views.append(
                 View(
-                    "/schedules/createschedule", 
+                    "/schedules/createschedule",
                     [appBar, createSchedulePage],
                     scroll="auto"
                 )
             )
 
         elif page.route == "/profiles/createprofile":
-            appBar.title=Text("Create a Cleaning Profile")
-            page.vertical_alignment="spaceAround"
-            createProfilePage =ProfileCreationPage(page)
+            appBar.title = Text("Create a Cleaning Profile")
+            page.vertical_alignment = "spaceAround"
+            createProfilePage = ProfileCreationPage(page)
             page.views.append(
                 View(
-                    "/profiles/createprofile", 
+                    "/profiles/createprofile",
                     [appBar,
-                    createProfilePage],
-                    horizontal_alignment="center"       
+                     createProfilePage],
+                    horizontal_alignment="center"
                 )
             )
 
@@ -120,7 +122,7 @@ def fletmain(page: Page):
 
     def open_profiles(e):
         page.go("/profiles")
-    
+
     def open_schedules(e):
         page.go("/schedules")
 
@@ -129,4 +131,5 @@ def fletmain(page: Page):
 
     page.go(page.route)
 
-flet.app(target=fletmain,assets_dir="assets")
+
+flet.app(target=fletmain, assets_dir="assets")
