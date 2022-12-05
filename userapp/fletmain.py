@@ -16,7 +16,7 @@ def fletmain(page: Page):
     page.window_resizable = False
     page.window_width = 500
     page.window_height = 780
-    print("d")
+
     def navbar_change(e):
         if navBar.selected_index == 0:
             open_profiles(e)
@@ -26,7 +26,6 @@ def fletmain(page: Page):
             open_schedules(e)
 
     navBar.on_change = navbar_change
-
 
     def route_change(e):
         page.views.clear()
@@ -104,7 +103,7 @@ def fletmain(page: Page):
             )
 
         page.update()
-    
+
     def view_pop(e):
         clear_profile_values()
         clear_schedule_values()

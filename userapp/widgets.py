@@ -29,25 +29,25 @@ profileSelectionText = Text(
     value="Choose a Cleaning Profile", size=16, expand=True)
 
 modeQ = Icon(name=icons.INFO_OUTLINE_ROUNDED,
-             tooltip="placeholder for tooltip - to be added later")
+             tooltip="Turbo is a more intensive clean with higher battery consumption, and Green is a lower powered, eco-friendly option.")
 
 lapsQ = Icon(name=icons.INFO_OUTLINE_ROUNDED,
-             tooltip="splaceholder for tooltip - to be added later")
+             tooltip="Zoomi can do multiple laps in a single cycle, for a more thorough clean.")
 
 speedQ = Icon(name=icons.INFO_OUTLINE_ROUNDED,
-              tooltip="dplaceholder for tooltip - to be added later")
+              tooltip="Quick Clean is a quicker clean, and Deep Clean is a slower, more effective clean.")
 
 dayQ = Icon(name=icons.INFO_OUTLINE_ROUNDED,
-            tooltip="placeholder for tooltip - to be added later")
+            tooltip="This is the first day you'd like your reccuring clean to start on.")
 
 timeQ = Icon(name=icons.INFO_OUTLINE_ROUNDED,
-             tooltip="placeholder for tooltip - to be added later")
+             tooltip="This is the time your Zoomi will begin cleaning.")
 
 reccuranceQ = Icon(name=icons.INFO_OUTLINE_ROUNDED,
-                   tooltip="placeholder for tooltip - to be added later")
+                   tooltip="This is how often your scheduled cycle will automatically repeat.")
 
 profileSelectionQ = Icon(name=icons.INFO_OUTLINE_ROUNDED,
-                         tooltip="placeholder for tooltip - to be added later")
+                         tooltip="Choose the Cleaning Profile you'd like Zoomi to clean with. You can choose from your saved cleaning profiles, or choose a Custom configuration just for this clean.")
 
 scheduleNameInput = TextField(
     label="Name", hint_text="My Scheduled Clean", expand=True)

@@ -19,7 +19,7 @@ class HomePage(MasterPage):
     def __init__(self, page):
         self.page = page
         super().__init__()
-        self.currentModeDisplay =""
+        self.currentModeDisplay = ""
         self.currentLapsDisplay = ""
         self.currentSpeedDisplay = ""
         self.zoomiBagPercentage = 1000
@@ -290,7 +290,7 @@ class HomePage(MasterPage):
                 self._build()
                 self.update()
                 self.page.update()
-            
+
         elif message['purpose'] == 'requestdefault':
             self.send_default_profile()
 
@@ -309,7 +309,7 @@ class HomePage(MasterPage):
         speed = default["Speed"]
         laps = default["Laps"]
         message = {"command": "storedefault",
-                    "mode": mode, "speed": speed, "laps": laps}
+                   "mode": mode, "speed": speed, "laps": laps}
         self.send_message(message)
 
     def send_message(self, message):
@@ -368,15 +368,19 @@ class HomePage(MasterPage):
         else:
             totalLaps = 1
 
-        completionDisplay = int((self.zoomiCurrentCompletionPercentage + int(self.zoomiCurrentCompletionPercentage/9))/totalLaps)
+        completionDisplay = int((self.zoomiCurrentCompletionPercentage +
+                                int(self.zoomiCurrentCompletionPercentage/9))/totalLaps)
         display = Column(
             controls=[
                 Row(controls=[
-                    Text(value=f"{completionDisplay}% Complete", style="titleMedium"), 
-                    Text(value=f"Lap {self.zoomiCurrentLap}/{totalLaps}",style="titleMedium")
-                    ]
+                    Text(value=f"{completionDisplay}% Complete",
+                         style="titleMedium"),
+                    Text(
+                        value=f"Lap {self.zoomiCurrentLap}/{totalLaps}", style="titleMedium")
+                ]
                 ),
-                Row(controls = [Text(f"Mode: {self.currentModeDisplay}   Speed: {self.currentSpeedDisplay}   Laps: {self.currentLapsDisplay}",style = "labelLarge")]),
+                Row(controls=[Text(
+                    f"Mode: {self.currentModeDisplay}   Speed: {self.currentSpeedDisplay}   Laps: {self.currentLapsDisplay}", style="labelLarge")]),
             ], horizontal_alignment="center"
         )
         if self.zoomiState == "active" or self.zoomiState == "bagFull" or self.zoomiState == "batteryEmpty":
@@ -389,7 +393,7 @@ class HomePage(MasterPage):
         if self.zoomiBagPercentage < 80:
             return Icon(name=icons.CHECK, color=colors.GREEN)
         elif self.zoomiBagPercentage > 80:
-            return Icon(name = icons.WARNING_ROUNDED, color =colors.RED)
+            return Icon(name=icons.WARNING_ROUNDED, color=colors.RED)
         else:
             return Icon(name=icons.WARNING, color=colors.RED)
 
@@ -439,15 +443,15 @@ class HomePage(MasterPage):
 
     def request_default_clean(self):
         message = {"command": "start", "default": True,
-                       "mode": "", "speed": "", "laps": ""}
+                   "mode": "", "speed": "", "laps": ""}
         self.send_message(message)
-    
+
     def request_custom_clean(self):
         mode = mode_dropdown.value
         laps = laps_dropdown.value
         speed = speed_dropdown.value
         message = {"command": "start", "default": False,
-                    "mode": mode, "speed": speed, "laps": laps}
+                   "mode": mode, "speed": speed, "laps": laps}
         self.send_message(message)
 
     def request_profile_clean(self):
@@ -459,12 +463,12 @@ class HomePage(MasterPage):
                 speed = profiles[object]["Speed"]
                 laps = profiles[object]["Laps"]
         message = {"command": "start", "default": False,
-                    "mode": mode, "speed": speed, "laps": laps}
+                   "mode": mode, "speed": speed, "laps": laps}
         self.send_message(message)
 
     def ask_to_start(self):
         if profileSelection_dropdown.value == "Default":
-           self.request_default_clean()
+            self.request_default_clean()
         elif profileSelection_dropdown.value == "Custom":
             self.request_custom_clean()
         else:

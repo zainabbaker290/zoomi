@@ -91,6 +91,7 @@ def write_updated_schedule_to_DB(scheduleIndex):
     con.close()
     clear_schedule_values()
 
+
 def remove_profile_from_schedule(scheduleIndex):
     con = sqlite3.connect("app.db")
     cur = con.cursor()
@@ -103,6 +104,7 @@ def remove_profile_from_schedule(scheduleIndex):
         WHERE schedule_id = ?;""", data)
     con.commit()
     con.close()
+
 
 def update_profile_selection_dropdown():
     profileSelection_dropdown.options = []
@@ -136,10 +138,9 @@ def read_default_profile_from_DB():
     con = sqlite3.connect("app.db")
     cur = con.cursor()
     profiles = cur.execute("SELECT * FROM defaultprofile")
-    p = profiles.fetchone()
-    print(p)
+    profile = profiles.fetchone()
     con.close()
-    return p
+    return profile
 
 
 def parse_profiles(profiles):
@@ -192,7 +193,8 @@ def write_profile_to_DB():
 def remove_profile_from_DB(profileIndex):
     con = sqlite3.connect("app.db")
     cur = con.cursor()
-    profile = cur.execute("SELECT * FROM profiles WHERE profile_id = ?""", (profileIndex,))
+    profile = cur.execute(
+        "SELECT * FROM profiles WHERE profile_id = ?""", (profileIndex,))
     profile = profile.fetchall()
     profileName = profile[0][1]
     schedules = fetch_schedules_from_DB()
