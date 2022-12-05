@@ -13,7 +13,7 @@ import threading
 class GraphicalZoomi:
     def __init__(self, Battery, DirtCompartment, defaultCleaningProfile, Room, BaseDock) -> None:
         self.battery = Battery
-        self.base_dock = BaseDock
+        self.baseDock = BaseDock
         self.dirtCompartment = DirtCompartment
         self.defaultCleaningProfile = defaultCleaningProfile
         self.currentMode = ""
@@ -28,13 +28,13 @@ class GraphicalZoomi:
         self.cleanedArea = []
         self.room = Room
         self.location = self.x, self.y
-        self.base_dock = BaseDock
+        self.baseDock = BaseDock
         self.rotation = 180
         self.cancelled = False
         self.stoppedEarly = False
-        self.powerConsumptionModifier = 0
-        self.suctionPowerModifier = 0
-        self.begin_clean = False
+        self.batteryDrainRate = 0
+        self.dirtCollectionRate = 0
+        self.beginClean = False
         self.completionPercentage = 0
         self.completedLaps = 0
         self.client_socket = ""
@@ -43,15 +43,15 @@ class GraphicalZoomi:
     def end_of_cycle_reset(self):
         self.completedLaps = 0
         self.completionPercentage = 0
-        self.begin_clean = False
+        self.beginClean = False
         self.send_clean_ended()
         self.currentMode = ""
         self.currentSpeed = ""
         self.currentLaps = ""
         self.stoppedEarly = False
         self.cancelled = False
-        self.powerConsumptionModifier = 0
-        self.suctionPowerModifier = 0
+        self.batteryDrainRate = 0
+        self.dirtCollectionRate = 0
 
     def wait_for_instructions(self):
         self.th = threading.Thread(
@@ -63,7 +63,7 @@ class GraphicalZoomi:
         time.sleep(1)
         self.request_default_profile()
         while True:
-            if self.begin_clean == True:
+            if self.beginClean == True:
                 self.accept_start(self.instructions)
 
     def send_updates_to_server(self):
@@ -143,7 +143,7 @@ class GraphicalZoomi:
     def parse_message(self, message):
         command = message["command"]
         if command == "start":
-            self.begin_clean = True
+            self.beginClean = True
             self.instructions = message
         elif command == "storedefault":
             self.update_default_profile(message)
@@ -188,7 +188,7 @@ class GraphicalZoomi:
             print("z")
             object.draw_hollow()
 
-    def initialiseTurtle(self):
+    def initialise_turtle(self):
         screen = turtle.Screen()
         screen.clear()
         self.turtleDot = turtle.Turtle()
@@ -205,26 +205,26 @@ class GraphicalZoomi:
     def initialise_cleaning_profile(self):
         if self.currentSpeed == "Quick Clean":
             self.delay = 0
-            self.powerConsumptionModifier += -0.01
-            self.suctionPowerModifier += 0.01
+            self.batteryDrainRate += -0.01
+            self.dirtCollectionRate += 0.01
         elif self.currentSpeed == "Deep Clean":
-            self.powerConsumptionModifier = +-0.0025
-            self.suctionPowerModifier += 0.0025
+            self.batteryDrainRate = +-0.0025
+            self.dirtCollectionRate += 0.0025
             self.delay = 0.02
         else:
             self.delay = 0.01
-            self.powerConsumptionModifier += -0.005
-            self.suctionPowerModifier += 0.005
+            self.batteryDrainRate += -0.005
+            self.dirtCollectionRate += 0.005
 
         if self.currentMode == "Turbo":
-            self.powerConsumptionModifier += -0.01
-            self.suctionPowerModifier += 0.01
+            self.batteryDrainRate += -0.01
+            self.dirtCollectionRate += 0.01
         elif self.currentMode == "Green":
-            self.powerConsumptionModifier = +-0.0025
-            self.suctionPowerModifier += 0.0025
+            self.batteryDrainRate = +-0.0025
+            self.dirtCollectionRate += 0.0025
         else:
-            self.powerConsumptionModifier += -0.005
-            self.suctionPowerModifier += 0.005
+            self.batteryDrainRate += -0.005
+            self.dirtCollectionRate += 0.005
         if self.currentLaps == "One Lap":
             self.totalLaps = 1
         elif self.currentLaps == "Two Laps":
@@ -250,7 +250,7 @@ class GraphicalZoomi:
         while waitingPeriod < 10:
             time.sleep(1)
             waitingPeriod += 1
-        self.dirtCompartment.dirt_level = 0
+        self.dirtCompartment.empty()
         self.set_zoomi_state("active")
 
     def horizontal_collision(self):
@@ -292,8 +292,8 @@ class GraphicalZoomi:
     def navigate_home(self):
         self.x = int(self.x)
         self.y = int(self.y)
-        baseX = self.base_dock.x
-        baseY = self.base_dock.y
+        baseX = self.baseDock.x
+        baseY = self.baseDock.y
         while (baseX != self.x or baseY != self.y):
             while (self.vertical_collision()):
                 self.y -= 1
@@ -331,8 +331,8 @@ class GraphicalZoomi:
 
     def move_to(self):
         time.sleep(self.delay)
-        self.battery.update(self.powerConsumptionModifier)
-        self.dirtCompartment.update(self.suctionPowerModifier)
+        self.battery.update(self.batteryDrainRate)
+        self.dirtCompartment.update(self.dirtCollectionRate)
         self.lastY = self.y
         self.lastX = self.x
         self.location = self.x, self.y
@@ -342,8 +342,8 @@ class GraphicalZoomi:
 
     def random_move(self, amnt):
         time.sleep(self.delay)
-        self.battery.update(self.powerConsumptionModifier)
-        self.dirtCompartment.update(self.suctionPowerModifier)
+        self.battery.update(self.batteryDrainRate)
+        self.dirtCompartment.update(self.dirtCollectionRate)
         self.x += amnt * math.cos(math.radians(self.rotation + 90))
         self.y -= amnt * math.sin(math.radians(self.rotation + 90))
         self.lastY = self.y
@@ -402,14 +402,13 @@ class GraphicalZoomi:
                         self.random_move(1)
                 if self.collision_check() == False:
                     self.random_move(1)
+
         if self.stoppedEarly == True:
             self.set_zoomi_state("endingEarly")
             self.stoppedEarly = True
-            self.cleanedArea = []
             return
         else:
             self.set_zoomi_state("ending")
-            self.cleanedArea = []
             return
 
     def send_message(self, message):
@@ -439,7 +438,7 @@ class GraphicalZoomi:
     def activate_zoomi(self):
         if self.cancelled == False:
             self.set_zoomi_state("preparing")
-            self.initialiseTurtle()
+            self.initialise_turtle()
         if self.cancelled == False:
             self.set_zoomi_state("active")
             self.completedLaps = 0
@@ -451,13 +450,16 @@ class GraphicalZoomi:
                 self.set_zoomi_state("endingEarly")
                 self.navigate_home()
                 self.set_zoomi_state("deactivated")
+                return
             else:
                 self.end_of_cycle_reset()
                 self.set_zoomi_state("ending")
                 self.navigate_home()
                 self.set_zoomi_state("deactivated")
-                
                 return
         else:
             self.set_zoomi_state("deactivated")
+            self.navigate_home()
             self.end_of_cycle_reset()
+            return
+
