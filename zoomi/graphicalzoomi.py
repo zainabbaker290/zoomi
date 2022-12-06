@@ -401,11 +401,10 @@ class GraphicalZoomi:
                     self.random_move(1)
 
         if self.stoppedEarly == True:
-            self.set_zoomi_state("endingEarly")
             self.stoppedEarly = True
             return
         else:
-            self.set_zoomi_state("ending")
+            self.cleanedArea = []
             return
 
     def send_message(self, message):

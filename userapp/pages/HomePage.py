@@ -370,7 +370,7 @@ class HomePage(MasterPage):
             totalLaps = 1
 
         completionDisplay = int((self.zoomiCurrentCompletionPercentage +
-                                int(self.zoomiCurrentCompletionPercentage/9))/totalLaps)
+                                int(self.zoomiCurrentCompletionPercentage/9)))
         display = Column(
             controls=[
                 Row(controls=[

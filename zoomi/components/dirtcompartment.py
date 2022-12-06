@@ -1,4 +1,3 @@
-
 class DirtCompartment:
     def __init__(self):
         self.dirt_level = 25
