@@ -12,7 +12,6 @@ class Battery:
     
     def charge(self):
         self.battery_level+=1
-        print("currently charging")
         print("battery is now " + str(self.get_battery_level()))
         if self.battery_level > 100:
             self.battery_level = 100
