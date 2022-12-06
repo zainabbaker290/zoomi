@@ -27,22 +27,6 @@ class TestGraphicalZoomi(unittest.TestCase):
         room_cliff = 10
         self.assertLess(c_object, room_cliff)
 
-    def test_base_dock_charges_1(self):
-        battery_level = 100
-        self.assertGreaterEqual(battery_level, 99)
-
-    def test_base_dock_charges_2(self):
-        battery_level = 80
-        self.assertLess(battery_level, 99)
-
-    def test_zoomi_forward_1(self):
-        dirt_level = 95
-        self.assertGreaterEqual(dirt_level, 90)
-
-    def test_zoomi_forward_2(self):
-        dirt_level = 85
-        self.assertLess(dirt_level, 90)
-
     def test_rotate_1(self):
         rotation = 400
         self.assertGreater(rotation, 360)
@@ -406,222 +390,376 @@ class TestGraphicalZoomi(unittest.TestCase):
         x = 0
         self.assertGreaterEqual(0, x)
 
-
     def test_zoomi_movement_1(self):
         #while no
-        completionPercentage = 95
-        self.assertGreaterEqual(completionPercentage, 90)
-
+        stoppedEarly = True
+        completionPercentage = 0.95
+        cancelled = True
+        self.assertTrue(stoppedEarly)
+        self.assertGreaterEqual(completionPercentage, 0.90)
+        self.assertTrue(cancelled)
+        #if no > else
+        stoppedEarly = False
+        self.assertFalse(stoppedEarly)
+    
     def test_zoomi_movement_2(self):
         #while yes 
-        completionPercentage = 0.90
-        self.assertLess(completionPercentage, 90)   
+        stoppedEarly = False
+        completionPercentage = 0.70
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completionPercentage, 0.90)
+        self.assertFalse(cancelled)
         #if no
-        self.assertLessEqual(completionPercentage, 0.90) 
-        #if no
-        battery = 25
-        self.assertGreaterEqual(battery, 20.0)
-        #if no
-        dirtLevel = 70
-        self.assertLessEqual(dirtLevel, 90.0)
-        #if no 
-        self.assertLessEqual(dirtLevel, 99.0)
-        #if no
-        collision_check = False
-        self.assertNotEqual(collision_check, True)
-        #if no
-        collision_check = True
-        self.assertNotEqual(collision_check, False)
+        completionPercentage = 0.92
+        self.assertGreaterEqual(completionPercentage, 0.90) 
+        #if no > else
+        stoppedEarly = False
+        self.assertFalse(stoppedEarly)
 
     def test_zoomi_movement_3(self):
         #while yes 
-        completionPercentage = 20
-        self.assertLess(completionPercentage, 90)
+        stoppedEarly = False
+        completionPercentage = 0.70
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completionPercentage, 0.90)
+        self.assertFalse(cancelled)
         #if yes 
-        self.assertGreater(completionPercentage, 0.90)
+        self.assertLess(completionPercentage, 0.90)
         #if no
         battery = 25
-        self.assertGreaterEqual(battery, 20.0)
+        self.assertGreaterEqual(battery, 10.0)
         #if no
         dirtLevel = 70
-        self.assertLessEqual(dirtLevel, 90.0)
-        #if no 
         self.assertLessEqual(dirtLevel, 99.0)
         #if no
         collision_check = False
-        self.assertNotEqual(collision_check, True)
+        self.assertFalse(collision_check)
         #if no
         collision_check = True
-        self.assertNotEqual(collision_check, False)
+        self.assertTrue(collision_check)
+        #if no > else
+        stoppedEarly = False
+        self.assertFalse(stoppedEarly)
 
     def test_zoomi_movement_4(self):
         #while yes 
-        completionPercentage = 20
-        self.assertLess(completionPercentage, 90)
+        stoppedEarly = False
+        completionPercentage = 0.70
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completionPercentage, 0.90)
+        self.assertFalse(cancelled)
         #if yes 
-        self.assertGreater(completionPercentage, 0.90)
+        self.assertLess(completionPercentage, 0.90)
         #if yes 
-        battery = 15
-        self.assertLess(battery, 20.0)
+        battery = 6
+        self.assertLess(battery, 10.0)
         #if no
         dirtLevel = 70
-        self.assertLessEqual(dirtLevel, 90.0)
-        #if no 
         self.assertLessEqual(dirtLevel, 99.0)
         #if no
         collision_check = False
-        self.assertNotEqual(collision_check, True)
+        self.assertFalse(collision_check)
         #if no
         collision_check = True
-        self.assertNotEqual(collision_check, False)
+        self.assertTrue(collision_check)
+        #if no > else
+        stoppedEarly = False
+        self.assertFalse(stoppedEarly)
 
     def test_zoomi_movement_5(self):
         #while yes 
-        completionPercentage = 20
-        self.assertLess(completionPercentage, 90)
+        stoppedEarly = False
+        completionPercentage = 0.70
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completionPercentage, 0.90)
+        self.assertFalse(cancelled)
         #if yes 
-        self.assertGreater(completionPercentage, 0.90)
+        self.assertLess(completionPercentage, 0.90)
         #if yes 
-        battery = 15
-        self.assertLess(battery, 20.0)
+        battery = 6
+        self.assertLess(battery, 10.0)
         #if yes 
-        dirtLevel = 95
-        self.assertGreater(dirtLevel, 90.0)
-        #if no
-        self.assertLessEqual(dirtLevel, 99.0)
+        dirtLevel = 100
+        self.assertGreater(dirtLevel, 99.0)
         #if no
         collision_check = False
-        self.assertNotEqual(collision_check, True)
+        self.assertFalse(collision_check)
         #if no
         collision_check = True
-        self.assertNotEqual(collision_check, False)
+        self.assertTrue(collision_check)
+        #if no > else
+        stoppedEarly = False
+        self.assertFalse(stoppedEarly)
 
     def test_zoomi_movement_6(self):
         #while yes 
-        completionPercentage = 20
-        self.assertLess(completionPercentage, 90)
+        stoppedEarly = False
+        completionPercentage = 0.70
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completionPercentage, 0.90)
+        self.assertFalse(cancelled)
         #if yes 
-        self.assertGreater(completionPercentage, 0.90)
+        self.assertLess(completionPercentage, 0.90)
         #if yes 
-        battery = 15
-        self.assertLess(battery, 20.0)
+        battery = 6
+        self.assertLess(battery, 10.0)
         #if yes 
         dirtLevel = 100
-        self.assertGreater(dirtLevel, 90.0)
-        #if yes 
         self.assertGreater(dirtLevel, 99.0)
-        #if no
-        collision_check = False
-        self.assertNotEqual(collision_check, True)
-        #if no
+        #if yes 
         collision_check = True
-        self.assertNotEqual(collision_check, False)
+        self.assertTrue(collision_check)
+        #if no
+        self.assertTrue(collision_check)
+        #if no
+        self.assertTrue(collision_check)
+        #if no > else
+        stoppedEarly = False
+        self.assertFalse(stoppedEarly)
 
     def test_zoomi_movement_7(self):
         #while yes 
-        completionPercentage = 20
-        self.assertLess(completionPercentage, 90)
+        stoppedEarly = False
+        completionPercentage = 0.70
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completionPercentage, 0.90)
+        self.assertFalse(cancelled)
         #if yes 
-        self.assertGreater(completionPercentage, 0.90)
+        self.assertLess(completionPercentage, 0.90)
         #if yes 
-        battery = 15
-        self.assertLess(battery, 20.0)
+        battery = 6
+        self.assertLess(battery, 10.0)
         #if yes 
         dirtLevel = 100
-        self.assertGreater(dirtLevel, 90.0)
-        #if yes 
         self.assertGreater(dirtLevel, 99.0)
         #if yes 
         collision_check = True
-        self.assertEqual(collision_check, True)
+        self.assertTrue(collision_check)
+        #if yes
+        collision_check = False
+        self.assertFalse(collision_check)
         #if no
-        self.assertNotEqual(collision_check, False)
-        #if no
-        self.assertNotEqual(collision_check, False)
-
+        collision_check = True
+        self.assertTrue(collision_check)
+        #if no > else
+        stoppedEarly = False
+        self.assertFalse(stoppedEarly)
+    
     def test_zoomi_movement_8(self):
         #while yes 
-        completionPercentage = 20
-        self.assertLess(completionPercentage, 90)
+        stoppedEarly = False
+        completionPercentage = 0.70
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completionPercentage, 0.90)
+        self.assertFalse(cancelled)
         #if yes 
-        self.assertGreater(completionPercentage, 0.90)
+        self.assertLess(completionPercentage, 0.90)
         #if yes 
-        battery = 15
-        self.assertLess(battery, 20.0)
+        battery = 6
+        self.assertLess(battery, 10.0)
         #if yes 
         dirtLevel = 100
-        self.assertGreater(dirtLevel, 90.0)
-        #if yes 
         self.assertGreater(dirtLevel, 99.0)
         #if yes 
         collision_check = True
-        self.assertEqual(collision_check, True)
-        #if yes 
+        self.assertTrue(collision_check)
+        #if yes
         collision_check = False
-        self.assertEqual(collision_check, False)
-        #if no
-        collision_check = True
-        self.assertNotEqual(collision_check, False)
-
+        self.assertFalse(collision_check)
+        #if yes 
+        self.assertFalse(collision_check)
+        #if no > else
+        stoppedEarly = False
+        self.assertFalse(stoppedEarly)
+    
     def test_zoomi_movement_9(self):
         #while yes 
-        completionPercentage = 20
-        self.assertLess(completionPercentage, 90)
+        stoppedEarly = False
+        completionPercentage = 0.70
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completionPercentage, 0.90)
+        self.assertFalse(cancelled)
         #if yes 
-        self.assertGreater(completionPercentage, 0.90)
+        self.assertLess(completionPercentage, 0.90)
         #if yes 
-        battery = 15
-        self.assertLess(battery, 20.0)
+        battery = 6
+        self.assertLess(battery, 10.0)
         #if yes 
         dirtLevel = 100
-        self.assertGreater(dirtLevel, 90.0)
-        #if yes 
         self.assertGreater(dirtLevel, 99.0)
         #if yes 
         collision_check = True
-        self.assertEqual(collision_check, True)
-        #if yes 
-        collision_check = False
-        self.assertEqual(collision_check, False)
+        self.assertTrue(collision_check)
         #if yes
-        self.assertEqual(collision_check, False)
-
+        collision_check = False
+        self.assertFalse(collision_check)
+        #if yes 
+        self.assertFalse(collision_check)
+        #if yes 
+        stoppedEarly = True 
+        self.assertTrue(stoppedEarly)
+    
     def test_activate_zoomi_1(self):
         #if no
-        battery_level = 20
-        self.assertGreater(battery_level, 10)
-        #if no
-        laps = 0
-        self.assertLessEqual(laps, 1)
-        #if no
-        self.assertLessEqual(laps, 2)
+        cancelled = True 
+        self.assertTrue(cancelled)
+        #if no > else
+        self.assertTrue(cancelled) 
 
     def test_activate_zoomi_2(self):
-        #if yes 
-        battery_level = 10
-        self.assertLessEqual(battery_level, 10)
-        #if no
-        laps = 0
-        self.assertLessEqual(laps, 1)
-        #if no
-        self.assertLessEqual(laps, 2)
-
+        #if yes
+        cancelled = False 
+        self.assertFalse(cancelled)
+        #if no > else
+        cancelled = True
+        self.assertTrue(cancelled)
+    
     def test_activate_zoomi_3(self):
+        #if yes
+        cancelled = False 
+        self.assertFalse(cancelled)
         #if yes 
-        battery_level = 10
-        self.assertLessEqual(battery_level, 10)
-        #if yes 
-        laps = 2
-        self.assertGreater(laps, 1)
-        #if no
-        self.assertLessEqual(laps, 2)
+        self.assertFalse(cancelled)
+        #while no
+        stoppedEarly = True 
+        completedLaps = 12
+        totalLaps = 10
+        cancelled = True
+        self.assertTrue(stoppedEarly)
+        self.assertGreaterEqual(completedLaps, totalLaps)
+        self.assertTrue(cancelled)
+        #if no > else
+        stoppedEarly = False 
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertFalse(cancelled)
 
     def test_activate_zoomi_4(self):
+        #if yes
+        cancelled = False 
+        self.assertFalse(cancelled)
         #if yes 
-        battery_level = 10
-        self.assertLessEqual(battery_level, 10)
+        self.assertFalse(cancelled)
+        #while yes 
+        stoppedEarly = False
+        completedLaps = 8
+        totalLaps = 10
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completedLaps, totalLaps)
+        self.assertFalse(cancelled)
+        #if no > else
+        self.assertFalse(stoppedEarly)
+        self.assertFalse(cancelled)
+
+    def test_activate_zoomi_5(self):
+        #if yes
+        cancelled = False 
+        self.assertFalse(cancelled)
         #if yes 
-        laps = 3
-        self.assertGreater(laps, 1)
+        self.assertFalse(cancelled)
+        #while yes 
+        stoppedEarly = False
+        completedLaps = 8
+        totalLaps = 10
+        cancelled = False
+        self.assertFalse(stoppedEarly)
+        self.assertLess(completedLaps, totalLaps)
+        self.assertFalse(cancelled)
         #if yes 
-        self.assertGreater(laps, 2)
+        stoppedEarly = True 
+        cancelled = True
+        self.assertTrue(stoppedEarly)
+        self.assertTrue(cancelled)
+
+    def test_send_updates_to_server_1(self):
+        #while no
+        whileLoopValue = False
+        self.assertFalse(whileLoopValue)
+
+    def test_send_updates_to_server_2(self):
+        #while yes 
+        whileLoopValue = True 
+        self.assertTrue(whileLoopValue)
+        #if no > else
+        message = "message"
+        lastmsg = "different message"
+        self.assertNotEqual(message, lastmsg)
+        #if no
+        messageValue= False
+        self.assertFalse(messageValue)
+
+    def test_send_updates_to_server_3(self):
+        #while yes 
+        whileLoopValue = True 
+        self.assertTrue(whileLoopValue)
+        #if yes 
+        message = "message"
+        lastmsg = "message"
+        self.assertEqual(message, lastmsg)
+        #if no
+        messageValue= False
+        self.assertFalse(messageValue)
+
+    def test_send_updates_to_server_4(self):
+        #while yes 
+        whileLoopValue = True 
+        self.assertTrue(whileLoopValue)
+        #if yes 
+        message = "message"
+        lastmsg = "message"
+        self.assertEqual(message, lastmsg)
+        #if yes
+        messageValue= True
+        self.assertTrue(messageValue)
+
+    def test_clean_charge_1(self):
+        battery = 100
+        self.assertGreaterEqual(battery, 100)
+
+    def test_clean_charge_2(self):
+        battery = 70
+        self.assertLess(battery, 100) 
+
+    def test_clean_empty_1(self):
+        waitingPeriod = 12
+        self.assertGreaterEqual(waitingPeriod, 10)
+
+    def test_clean_empty_2(self):
+        waitingPeriod = 8
+        self.assertLess(waitingPeriod, 10)
+
+    def test_wait_for_instruction_1(self):
+        whileLoopValue = False
+        self.assertFalse(whileLoopValue)
+
+    def test_wait_for_instruction_2(self):
+        whileLoopValue = True
+        self.assertTrue(whileLoopValue)
+        begin_clean = False
+        self.assertFalse(begin_clean)
+
+    def test_wait_for_instruction_3(self):
+        whileLoopValue = True
+        self.assertTrue(whileLoopValue)
+        begin_clean = True
+        self.assertTrue(begin_clean)
+
+    def test_accept_start_1(self):
+        default = False 
+        self.assertFalse(default)
+
+    def test_accept_start_2(self):
+        default = True
+        self.assertTrue(default)
+
+    
+
