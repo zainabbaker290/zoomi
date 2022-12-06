@@ -3,7 +3,6 @@ class CleaningProfile():
         self.mode = mode
         self.speed = speed
         self.laps = laps
-        self.sensor= Sensor
         self.floor = self.sensor.get_floor_type()
 
     def floor_detection(self, floor):
